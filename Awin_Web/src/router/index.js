@@ -3,6 +3,7 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Home from '../views/Home.vue'
 import NewWelcome from '../views/NewWelcome.vue'
+import Welcome from '../views/Welcome.vue'
 import { auth } from '../firebase'
 
 const routes = [
@@ -15,9 +16,17 @@ const routes = [
     }
   },
   {
+    path: '/newwelcome',
+    name: 'newwelcome',
+    component: NewWelcome,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
     path: '/welcome',
     name: 'welcome',
-    component: NewWelcome,
+    component: Welcome,
     meta: {
       requiresAuth: false
     }
