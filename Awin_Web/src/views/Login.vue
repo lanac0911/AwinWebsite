@@ -1,5 +1,5 @@
 <template>
-  <main class=" bg-white min-h-screen flex items-center justify-center">
+  <main class="bg-gray-800 min-h-screen flex items-center justify-center">
     <form class="w-full max-w-sm p-8 bg-gray-100 shadow-md rounded-lg" @submit.prevent="login">
       <h2 class="text-2xl uppercase mb-8 font-bold text-purple-600">Login</h2>
       <div class="mb-4">
@@ -27,32 +27,32 @@
       </div>
 
       <p class="text-center mt-4">
-      Don't have an account? 
-      <router-link to="/register" class="text-purple-600 underlineb font-bold">Register</router-link>
-    </p>
+        Don't have an account?
+        <router-link to="/register" class="text-purple-600 underlineb font-bold"
+          >Register</router-link
+        >
+      </p>
     </form>
   </main>
 </template>
 
-<script >
-import { ref } from "vue";
-import { useStore } from "vuex";
+<script>
+import { ref } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
   setup() {
-    const login_form = ref({});
-    const store = useStore();
+    const login_form = ref({})
+    const store = useStore()
 
     const login = () => {
-      store.dispatch("login", login_form.value);
-    };
+      store.dispatch('login', login_form.value)
+    }
 
     return {
       login_form,
       login
-    };
-  },
-};
+    }
+  }
+}
 </script>
-
- 
