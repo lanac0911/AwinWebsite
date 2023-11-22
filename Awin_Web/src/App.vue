@@ -10,9 +10,9 @@ import WelcomPage from "./views/WelcomPage.vue";
     <div class="bottomBar">
       <el-affix position="bottom" :offset="120">
         <el-button-group >
-          <el-button type="primary" :icon="Edit" />
-          <el-button type="primary" :icon="Share" />
-          <el-button type="primary" :icon="Delete" />
+          <el-button type="primary" :icon="HomeFilled" size="large"/>
+          <el-button type="primary" :icon="Share" size="large"/>
+          <el-button type="primary" :icon="HomeFilled" size="large"/>
         </el-button-group>
       </el-affix>      
     </div>
@@ -33,6 +33,7 @@ import {
   Delete,
   Edit,
   Share,
+  HomeFilled,
 } from '@element-plus/icons-vue'
 export default defineComponent({
   components: {
@@ -62,8 +63,10 @@ body, html {
 .bottomBar{
   position: absolute;
   bottom: 0;
-  text-align: center;
-  border-radius: 4px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5%;
 }
 
 #app, 
