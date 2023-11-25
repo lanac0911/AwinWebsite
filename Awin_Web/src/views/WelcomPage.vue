@@ -19,11 +19,9 @@
 
 <script>
 import { defineComponent } from 'vue'
-import { ElAffix  } from 'element-plus'
 
 export default defineComponent({
   components: {
-    ElAffix,
   },
   setup() {
     return {
@@ -59,6 +57,7 @@ export default defineComponent({
   justify-content: center;
 }
 .lineword{
+  color: #fff;
   font-size: 7rem;
   line-height: 1;
   font-family: 'Poppins', sans-serif;
@@ -70,16 +69,19 @@ export default defineComponent({
 .right{
   width: 40%;
   height: 100%;
+  background-size: cover; 
+  background-position: right;
+  background-image: url('https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?q=80&w=3164&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
   background-color: #8167a9;
 }
 
 #hightlight{
-  background: #2c3e50;
-  color: #fff;
+  background: #ffffff;
+  color: rgb(40, 38, 38);
   padding: 0.5rem
 }
 #hightlight::first-letter{
-  color: #fff;
+  color: rgb(40, 38, 38);
 }
 
 #smallword{
@@ -87,230 +89,5 @@ export default defineComponent({
   padding: 0.3rem;
 }
 
-.div {
-  border: 1px solid #000;
-  background-color: #fff;
-  display: flex;
-  flex-direction: column;
-}
-.div-2 {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  min-height: 1080px;
-  width: 100%;
-  align-items: center;
-  padding: 0 20px 50px;
-}
-@media (max-width: 991px) {
-  .div-2 {
-    max-width: 100%;
-  }
-}
-.img {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-.div-3 {
-  position: relative;
-  display: flex;
-  margin-bottom: 30px;
-  width: 100%;
-  max-width: 1474px;
-  flex-direction: column;
-}
-@media (max-width: 991px) {
-  .div-3 {
-    max-width: 100%;
-  }
-}
-.div-4 {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 20px;
-}
-@media (max-width: 991px) {
-  .div-4 {
-    max-width: 100%;
-    flex-wrap: wrap;
-  }
-}
-.div-5 {
-  display: flex;
-  margin-top: 213px;
-  flex-grow: 1;
-  flex-basis: 0%;
-  flex-direction: column;
-}
-@media (max-width: 991px) {
-  .div-5 {
-    max-width: 100%;
-    margin-top: 40px;
-  }
-}
-.div-6 {
-  color: #000;
-  font: 800 127px/190px Poppins, sans-serif;
-}
-@media (max-width: 991px) {
-  .div-6 {
-    max-width: 100%;
-    font-size: 40px;
-    line-height: 67px;
-  }
-}
-.div-7 {
-  color: #fff;
-  backdrop-filter: blur(1.2681913375854492px);
-  background-color: #8167a9;
-  margin-top: 30px;
-  align-items: start;
-  padding: 11px 20px 11px -15px;
-  font: 800 127px/190px Poppins, sans-serif;
-}
-@media (max-width: 991px) {
-  .div-7 {
-    max-width: 100%;
-    font-size: 40px;
-    line-height: 67px;
-  }
-}
-.div-8 {
-  align-self: start;
-  display: flex;
-  flex-basis: 0%;
-  flex-direction: column;
-  align-items: center;
-}
-.div-9 {
-  background-color: #8167a9;
-  z-index: 1;
-  display: flex;
-  width: 4px;
-  height: 320px;
-  flex-direction: column;
-}
-.img-2 {
-  aspect-ratio: 1.11;
-  object-fit: contain;
-  object-position: center;
-  width: 125px;
-  overflow: hidden;
-}
-.div-10 {
-  color: #000;
-  margin-top: 5px;
-  font: 800 127px/190px Poppins, sans-serif;
-}
-@media (max-width: 991px) {
-  .div-10 {
-    max-width: 100%;
-    font-size: 40px;
-    line-height: 67px;
-  }
-}
-.div-11 {
-  display: flex;
-  margin-top: 33px;
-  flex-direction: column;
-  align-items: end;
-}
-@media (max-width: 991px) {
-  .div-11 {
-    max-width: 100%;
-  }
-}
-.div-12 {
-  color: #000;
-  align-self: stretch;
-  font: 800 127px/190px Poppins, sans-serif;
-}
-@media (max-width: 991px) {
-  .div-12 {
-    max-width: 100%;
-    font-size: 40px;
-    line-height: 67px;
-  }
-}
-.div-13 {
-  color: #000;
-  align-self: stretch;
-  margin-top: 26px;
-  font: 400 32px/50px Knewave, sans-serif;
-}
-@media (max-width: 991px) {
-  .div-13 {
-    max-width: 100%;
-  }
-}
-.div-14 {
-  border-radius: 360.802px;
-  background-color: #e7e7e7;
-  display: flex;
-  margin-top: 145px;
-  width: 1293px;
-  max-width: 100%;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 11px 51px 21px 52px;
-}
-@media (max-width: 991px) {
-  .div-14 {
-    flex-wrap: wrap;
-    margin-top: 40px;
-    padding: 0 20px;
-  }
-}
-.img-3 {
-  aspect-ratio: 1.3;
-  object-fit: contain;
-  object-position: center;
-  width: 87px;
-  overflow: hidden;
-  align-self: stretch;
-  max-width: 100%;
-}
-.div-15 {
-  color: rgba(0, 0, 0, 0.4);
-  text-align: center;
-  align-self: center;
-  flex-grow: 1;
-  flex-basis: auto;
-  margin: auto 0;
-  font: 700 30px/36px Montserrat, sans-serif;
-}
-.div-16 {
-  color: rgba(0, 0, 0, 0.4);
-  text-align: center;
-  align-self: center;
-  flex-grow: 1;
-  flex-basis: auto;
-  margin: auto 0;
-  font: 700 30px/36px Montserrat, sans-serif;
-}
-.div-17 {
-  color: rgba(0, 0, 0, 0.4);
-  text-align: center;
-  align-self: center;
-  flex-grow: 1;
-  flex-basis: auto;
-  margin: auto 0;
-  font: 700 30px/36px Montserrat, sans-serif;
-}
-.div-18 {
-  color: rgba(0, 0, 0, 0.4);
-  text-align: center;
-  align-self: center;
-  flex-grow: 1;
-  flex-basis: auto;
-  margin: auto 0;
-  font: 700 30px/36px Montserrat, sans-serif;
-}
+
 </style>
