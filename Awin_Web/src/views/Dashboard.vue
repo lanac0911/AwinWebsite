@@ -9,17 +9,17 @@
         text-color="#fff"
         @select="handleMenuSelect"
       >
-        <el-menu-item index="計畫">
+        <el-menu-item index="plan">
           <el-icon><document /></el-icon>
           <span>計畫</span>
         </el-menu-item>
-        <el-menu-item index="教授資料">
+        <el-menu-item index="professor">
           <el-icon size="large" >
             <Location />
           </el-icon>
           <span>教授資料</span>
         </el-menu-item>
-        <el-menu-item index="成員">
+        <el-menu-item index="members">
           <el-icon><document /></el-icon>
           <span>成員</span>
         </el-menu-item>
@@ -27,53 +27,110 @@
     </div>
 
     <div class="mainTable">
-      <h2 class="bread">
-        {{ breadcrumb }}
-      </h2>
+      <duv class="bread">
+        <h2>
+          {{ breadcrumb }}
+          {{ $route.params.page }}
+        </h2>
+      </duv>
       <div class="tableArea">
+        <router-view name="dashboard-view" />
 
       </div>
+      </div>
       
-    </div>
   </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
-import { ElIcon, ElMenu, ElCol, ElBreadcrumb, ElBreadcrumbItem } from 'element-plus'
-import { ref, onMounted } from 'vue';
+import { defineComponent, getCurrentInstance, onMounted, ref } from 'vue'
+import { ElIcon, ElMenu, ElTable, ElButton, } from 'element-plus'
 import {
-  HomeFilled,
-  Menu as IconMenu,
   Location,
   Document,
 } from '@element-plus/icons-vue'
+import { Timer } from '@element-plus/icons-vue'
+import { useRoute, useRouter } from 'vue-router';
+
+// 在需要发送请求的组件中
+import axiosInstance from '@/axios';
+
 
 export default defineComponent({
   components: {
     ElIcon,
     ElMenu,
-    ElCol,
+    ElTable,
+    ElButton,
+    
   },
-  setup() {
+  setup(props, context) {
+    // const route = useRoute();
+    const router = useRouter();
     const activeMenu = ref('dashboard');
     const isCollapse = ref(false);
     const breadcrumb = ref('成員');
 
-    const handleMenuSelect =  (key) => {
-      activeMenu.value = key;
-      updateBreadcrumb(key);
-      // console.log(key, keyPath)
-    };
+    const handleMenuSelect = (key) => {
+      // Set breadcrumb based on the selected menu
+      switch (key) {
+        case 'plan':
+          breadcrumb.value = '計畫'
+          break
+        case 'professor':
+          breadcrumb.value = '教授資料'
+          break
+        case 'members':
+          breadcrumb.value = '成員'
+          break
+        default:
+          breadcrumb.value = ''
+      }
+
+      // Navigate to the corresponding route
+      // this.$router.push({ name: 'dashboard', params: { page: key } })
+      // router.push({ name: 'dashboard', params: { page: key } });
+      router.push(`/dashboard/${key}`);
+    }
 
     const updateBreadcrumb = (key) => {
       breadcrumb.value = key
     };
 
+    const handleEdit = (index, row) => {
+      console.log(index, row)
+    }
+    const handleDelete = (index, row) => {
+      console.log(index, row)
+    }
+
+    const tableData = [
+      {
+        date: '2016-05-03',
+        name: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles',
+      },
+      {
+        date: '2016-05-02',
+        name: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles',
+      },
+      {
+        date: '2016-05-04',
+        name: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles',
+      },
+      {
+        date: '2016-05-01',
+        name: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles',
+      },
+    ]
 
     onMounted(() => {
       // 在组件挂载后执行的逻辑
       console.log("test")
+      // fetchData()
     });
 
     return {
@@ -83,22 +140,39 @@ export default defineComponent({
       handleMenuSelect,
       Location,
       Document,
+      handleEdit,
+      handleDelete,
+      tableData,
     };   
   }
 })
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .navBar{
   height: 100% !important;
   width: 20% !important;
 }
 
+
+.bread{
+  height: 10%;
+  width: 100%;
+}
+.tableArea{
+  height: 90%;
+  width: 100%;
+}
+
 .mainTable{
   width: 80%;
-  background-color: aqua;
+  // background-color: aqua;
   padding: 3rem;
+  h2 {
+    color: #000;
+    font-weight: bold;
+  }
 }
 
 
@@ -110,9 +184,6 @@ export default defineComponent({
   flex-direction: row;
 }
 
-.bread{
-  color: red;
-}
 
 .el-menu {
   width: 100%;

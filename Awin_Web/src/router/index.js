@@ -33,8 +33,69 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: () => import('../views/Dashboard.vue')
+      component: () => import('../views/Dashboard.vue'),
+      children: [
+        {
+          path: '',
+          components: {
+            'dashboard-view': () => import('../views/Dashboard.vue'),
+          },
+          name: 'dashboard-default',
+        },
+        {
+          path: 'plan',
+          components: {
+            'dashboard-view': () => import('../views/Dashboard/Plan.vue'),
+          },
+          name: 'dashboard-plan',
+        },
+        {
+          path: 'members',
+          components: {
+            'dashboard-view': () => import('../views/Dashboard/Members.vue'),
+          },
+          name: 'dashboard-members',
+        },
+        {
+          path: 'professor',
+          components: {
+            'dashboard-view': () => import('../views/Dashboard/Professor.vue'),
+          },
+          name: 'dashboard-professor',
+        },
+        {
+          path: ':page',
+          components: {
+            'dashboard-view': () => import('../views/Dashboard.vue'),
+          },
+          name: 'dashboard-page',
+        },
+      ],
     },
+    
+    // {
+    //   path: '/dashboard/:page',
+    //   name: 'dashboard',
+    //   components: {
+    //     // 使用命名視圖 'subview' 來匹配名稱為 'subview' 的 router-view
+    //     subview: () => import('../views/Dashboard.vue'),
+    //     // 你可以添加其他的命名視圖，每個視圖對應不同的路由
+    //     // 例如，'/dashboard/members' 可以有一個不同的組件
+    //     members: () => import('../views/Dashboard/Members.vue'),
+    //     plan: () => import('../views/Dashboard/Plan.vue'),
+    //     // ... 其他視圖 ...
+    //   },
+    // },
+    // {
+    //   path: '/dashboard/:page',
+    //   name: 'dashboard',
+    //   component: () => import('../views/Dashboard.vue')
+    // },
+    // {
+    //   path: '/dashboard/members',
+    //   name: 'members',
+    //   component: () => import('../views/Dashboard/Members.vue')
+    // },
   ]
 })
 

@@ -69,12 +69,12 @@ body, html {
 }
 .bottomBar{
   position: absolute;
-  bottom: -95%;
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: 5%;
+  align-items: flex-end;
+  padding-bottom: 2%;
 }
 .el-button-custom {
   height: 5rem;

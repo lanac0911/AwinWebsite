@@ -22,5 +22,13 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  }
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "@/styles/main.scss";`, // 这里引入你的 SCSS 文件路径
+      },
+    },
+  },
 })
+
