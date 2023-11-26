@@ -28,7 +28,7 @@ const router = createRouter({
     {
       path: '/contact',
       name: 'contact',
-      component: () => import('../views/Dashboard.vue')
+      component: () => import('../views/ContactPage.vue')
     },
     {
       path: '/dashboard',
@@ -38,7 +38,7 @@ const router = createRouter({
         {
           path: '',
           components: {
-            'dashboard-view': () => import('../views/Dashboard.vue'),
+            'dashboard-view': () => import('../views/Dashboard/Main.vue'),
           },
           name: 'dashboard-default',
         },
@@ -66,7 +66,7 @@ const router = createRouter({
         {
           path: ':page',
           components: {
-            'dashboard-view': () => import('../views/Dashboard.vue'),
+            'dashboard-view': () => import('../views/Dashboard/Main.vue'),
           },
           name: 'dashboard-page',
         },
