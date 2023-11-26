@@ -4,6 +4,12 @@ import { RouterLink, RouterView } from "vue-router";
 
 <template>
   <div class="wrapper">
+    <div v-if="$store.state.user">
+      <router-link to="/">Home</router-link>
+      <button @click="$store.dispatch('logout')">Logout</button>
+    </div>
+    <router-view />
+
     <div v-if="!$route.path.startsWith('/dashboard')" class="bottomBar">
       <el-button-group class="btns">
         <el-button id="first-btn" class="el-button-custom">
@@ -37,9 +43,17 @@ import { RouterLink, RouterView } from "vue-router";
 <script>
 import { defineComponent } from "vue";
 import { HomeFilled } from "@element-plus/icons-vue";
+import { onBeforeMount } from "vue";
+import { useStore } from "vuex";
+
 export default defineComponent({
   components: {},
   setup() {
+    const store = useStore();
+
+    onBeforeMount(() => {
+      store.dispatch("fetchUser");
+    });
     return {
       zIndex: 3000,
       size: "small",

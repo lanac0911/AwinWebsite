@@ -1,6 +1,48 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import WelcomPage from '../views/WelcomPage.vue'
+import Login from '../views/Login.vue'
+import Register from '../views/Register.vue'
+import Home from '../views/Home.vue'
+import NewWelcome from '../views/NewWelcome.vue'
+import Welcome from '../views/Welcome.vue'
+import { auth } from '../firebase'
 
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: Home,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/newwelcome',
+    name: 'newwelcome',
+    component: NewWelcome,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: '/welcome',
+    name: 'welcome',
+    component: Welcome,
+    meta: {
+      requiresAuth: false
+    }
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register
+  }
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -72,31 +114,47 @@ const router = createRouter({
         },
       ],
     },
-    
-    // {
-    //   path: '/dashboard/:page',
-    //   name: 'dashboard',
-    //   components: {
-    //     // 使用命名視圖 'subview' 來匹配名稱為 'subview' 的 router-view
-    //     subview: () => import('../views/Dashboard.vue'),
-    //     // 你可以添加其他的命名視圖，每個視圖對應不同的路由
-    //     // 例如，'/dashboard/members' 可以有一個不同的組件
-    //     members: () => import('../views/Dashboard/Members.vue'),
-    //     plan: () => import('../views/Dashboard/Plan.vue'),
-    //     // ... 其他視圖 ...
-    //   },
-    // },
-    // {
-    //   path: '/dashboard/:page',
-    //   name: 'dashboard',
-    //   component: () => import('../views/Dashboard.vue')
-    // },
-    // {
-    //   path: '/dashboard/members',
-    //   name: 'members',
-    //   component: () => import('../views/Dashboard/Members.vue')
-    // },
+    {
+      path: '/newwelcome',
+      name: 'newwelcome',
+      component: NewWelcome,
+      meta: {
+        requiresAuth: false
+      }
+    },
+    {
+      path: '/welcome',
+      name: 'welcome',
+      component: Welcome,
+      meta: {
+        requiresAuth: false
+      }
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: Register
+    }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.path === '/login' && auth.currentUser) {
+    next('/')
+    return
+  }
+
+  if (to.matched.some((record) => record.meta.requiresAuth) && !auth.currentUser) {
+    next('/login')
+    return
+  }
+
+  next()
 })
 
 export default router
