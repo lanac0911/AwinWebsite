@@ -26,6 +26,7 @@
       </el-menu>
       <div class="goBack">
         <router-link to="/">Go Back</router-link>
+        <button @click="$store.dispatch('logout')">Logout</button>
       </div>
     </div>
 
@@ -44,14 +45,14 @@
 </template>
 
 <script>
-import { defineComponent, getCurrentInstance, onMounted, ref } from "vue";
+import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
 import { ElIcon, ElMenu, ElTable, ElButton } from "element-plus";
 import { Location, Document } from "@element-plus/icons-vue";
 import { Timer } from "@element-plus/icons-vue";
 import { useRoute, useRouter } from "vue-router";
-
 // 在需要发送请求的组件中
 import axiosInstance from "@/axios";
+import { useStore } from "vuex";
 
 export default defineComponent({
   components: {
@@ -60,13 +61,16 @@ export default defineComponent({
     ElTable,
     ElButton,
   },
-  setup(props, context) {
-    // const route = useRoute();
+  setup() {
     const router = useRouter();
     const activeMenu = ref("dashboard");
     const isCollapse = ref(false);
     const breadcrumb = ref("");
+    const store = useStore();
 
+    onBeforeMount(() => {
+      store.dispatch("fetchUser");
+    });
     const handleMenuSelect = (key) => {
       // Set breadcrumb based on the selected menu
       switch (key) {
@@ -82,46 +86,8 @@ export default defineComponent({
         default:
           breadcrumb.value = "";
       }
-
-      // Navigate to the corresponding route
-      // this.$router.push({ name: 'dashboard', params: { page: key } })
-      // router.push({ name: 'dashboard', params: { page: key } });
       router.push(`/dashboard/${key}`);
     };
-
-    const updateBreadcrumb = (key) => {
-      breadcrumb.value = key;
-    };
-
-    const handleEdit = (index, row) => {
-      console.log(index, row);
-    };
-    const handleDelete = (index, row) => {
-      console.log(index, row);
-    };
-
-    const tableData = [
-      {
-        date: "2016-05-03",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-02",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-04",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-      {
-        date: "2016-05-01",
-        name: "Tom",
-        address: "No. 189, Grove St, Los Angeles",
-      },
-    ];
 
     onMounted(() => {
       // 在组件挂载后执行的逻辑
@@ -136,9 +102,7 @@ export default defineComponent({
       handleMenuSelect,
       Location,
       Document,
-      handleEdit,
-      handleDelete,
-      tableData,
+      store,
     };
   },
 });

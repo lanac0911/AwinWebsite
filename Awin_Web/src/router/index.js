@@ -1,48 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import WelcomPage from '../views/WelcomPage.vue'
+import Welcome from '../views/Welcome.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
-import Home from '../views/Home.vue'
 import NewWelcome from '../views/NewWelcome.vue'
-import Welcome from '../views/Welcome.vue'
 import { auth } from '../firebase'
 
-const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home,
-    meta: {
-      requiresAuth: true
-    }
-  },
-  {
-    path: '/newwelcome',
-    name: 'newwelcome',
-    component: NewWelcome,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-    path: '/welcome',
-    name: 'welcome',
-    component: Welcome,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: Login
-  },
-  {
-    path: '/register',
-    name: 'Register',
-    component: Register
-  }
-]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,32 +12,50 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: WelcomPage
+      component: Welcome,
+      meta: {
+        requiresAuth: false
+      }
     },
     {
       path: '/research',
       name: 'research',
-      component: () => import('../views/ResearchPage.vue')
+      component: () => import('../views/ResearchPage.vue'),
+      meta: {
+        requiresAuth: false
+      }
     },
     {
       path: '/professors',
       name: 'professors',
-      component: () => import('../views/ProfessorPage.vue')
+      component: () => import('../views/ProfessorPage.vue'),
+      meta: {
+        requiresAuth: false
+      }
     },
     {
       path: '/members',
       name: 'members',
-      component: () => import('../views/MemberPage.vue')
+      component: () => import('../views/MemberPage.vue'),
+      meta: {
+        requiresAuth: false
+      }
     },
     {
       path: '/contact',
       name: 'contact',
-      component: () => import('../views/ContactPage.vue')
+      component: () => import('../views/ContactPage.vue'),
+      meta: {
+        requiresAuth: false
+      }
     },
     {
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('../views/Dashboard.vue'),
+      meta: {
+        requiresAuth: true
+      },
       children: [
         {
           path: '',
@@ -133,12 +113,18 @@ const router = createRouter({
     {
       path: '/login',
       name: 'Login',
-      component: Login
+      component: Login,
+      meta: {
+        requiresAuth: false
+      }
     },
     {
       path: '/register',
       name: 'Register',
-      component: Register
+      component: Register,
+      meta: {
+        requiresAuth: false
+      }
     }
   ]
 })

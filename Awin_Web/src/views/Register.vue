@@ -1,6 +1,9 @@
 <template>
-  <main class="bg-gray-800 min-h-screen flex items-center justify-center">
-    <form class="w-full max-w-sm p-8 bg-gray-100 shadow-md rounded-lg" @submit.prevent="register">
+  <main class="bg-gray-800 min-h-screen flex items-center justify-center w-full z-10">
+    <form
+      class="w-full max-w-sm p-8 bg-gray-100 shadow-md rounded-lg"
+      @submit.prevent="register"
+    >
       <h2 class="text-2xl uppercase mb-8 font-bold text-purple-600">Register</h2>
       <div class="mb-4">
         <input
@@ -28,28 +31,30 @@
 
       <p class="text-center mt-4">
         Already have an account?
-        <router-link to="/login" class="text-purple-600 underlineb font-bold">Login</router-link>
+        <router-link to="/login" class="text-purple-600 underlineb font-bold"
+          >Login</router-link
+        >
       </p>
     </form>
   </main>
 </template>
 
 <script>
-import { ref } from 'vue'
-import { useStore } from 'vuex'
+import { ref } from "vue";
+import { useStore } from "vuex";
 export default {
   setup() {
-    const register_form = ref({})
-    const store = useStore()
+    const register_form = ref({});
+    const store = useStore();
 
     const register = () => {
-      store.dispatch('register', register_form.value)
-    }
+      store.dispatch("register", register_form.value);
+    };
 
     return {
       register_form,
-      register
-    }
-  }
-}
+      register,
+    };
+  },
+};
 </script>

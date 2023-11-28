@@ -1,6 +1,9 @@
 <template>
-  <main class="bg-gray-800 min-h-screen flex items-center justify-center">
-    <form class="w-full max-w-sm p-8 bg-gray-100 shadow-md rounded-lg" @submit.prevent="login">
+  <main class="bg-gray-800 min-h-screen flex items-center justify-center w-full z-10">
+    <form
+      class="w-full max-w-sm p-8 bg-gray-100 shadow-md rounded-lg"
+      @submit.prevent="login"
+    >
       <h2 class="text-2xl uppercase mb-8 font-bold text-purple-600">Login</h2>
       <div class="mb-4">
         <input
@@ -37,22 +40,22 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import { useStore } from 'vuex'
+import { ref } from "vue";
+import { useStore } from "vuex";
 
 export default {
   setup() {
-    const login_form = ref({})
-    const store = useStore()
+    const login_form = ref({});
+    const store = useStore();
 
     const login = () => {
-      store.dispatch('login', login_form.value)
-    }
+      store.dispatch("login", login_form.value);
+    };
 
     return {
       login_form,
-      login
-    }
-  }
-}
+      login,
+    };
+  },
+};
 </script>

@@ -94,6 +94,14 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@900&display=swap");
+span,
+p {
+  color: #fff;
+}
+.question span {
+  color: #81679a !important;
+}
+
 .imgArea {
   height: 70%;
   width: 100%;
@@ -104,7 +112,6 @@ export default defineComponent({
     justify-content: center;
     font-family: "Poppins", sans-serif;
     font-size: 9rem;
-    color: var(--main-purple);
   }
   .realImg {
     width: 100%;
@@ -200,7 +207,7 @@ export default defineComponent({
 }
 
 .container {
-  width: 100%;
+  width: 100% !important;
   height: 100%;
   display: flex;
   padding: 3rem;
