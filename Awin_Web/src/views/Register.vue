@@ -137,15 +137,18 @@ export default {
         }
 
         console.log(newPerson)
-
-        await axios
-          .post('http://localhost:8080/api/person', newPerson)
+        axios
+          .get(`http://localhost:8080/api/person/personId/${register_form.value.personId}`)
           .then((response) => {
-            alert('註冊成功，等待教授審核')
-            console.log('註冊成功:', response.data)
+            let isRegistered = response.data.personId === register_form.value.personId
+            if (isRegistered) {
+              alert('註冊過了 ! 你是要註冊幾次?')
+            } else {
+              registerPerson(newPerson)
+            }
           })
-          .catch((error) => {
-            alert('註冊期間發生錯誤:', error)
+          .catch(() => {
+            registerPerson(newPerson)
           })
       } catch (error) {
         alert('發生錯誤:', error)
@@ -155,6 +158,18 @@ export default {
     return {
       register_form,
       register
+    }
+
+    function registerPerson(newPerson) {
+      axios
+        .post('http://localhost:8080/api/person', newPerson)
+        .then((response) => {
+          alert('註冊成功，等待教授審核')
+          console.log('註冊成功:', response.data)
+        })
+        .catch((error) => {
+          console.log('註冊期間發生錯誤:', error)
+        })
     }
   }
 }
