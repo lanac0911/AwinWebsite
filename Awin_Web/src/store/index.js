@@ -5,9 +5,13 @@ import { useStore } from 'vuex'
 
 export default createStore({
   state: {
+    isAuthenticated: false,
     userData: null
   },
   mutations: {
+    setAuthStatus(state, isAuthenticated) {
+      state.isAuthenticated = isAuthenticated
+    },
     setUserData(state, userData) {
       state.userData = userData
     },
@@ -22,12 +26,14 @@ export default createStore({
     async login({ commit }, personInfo) {
       console.log('login')
       commit('setUserData', personInfo)
-      router.push('/')
+      commit('setAuthStatus', true)
+      router.push('/dashboard')
     },
 
     async logout({ commit }) {
       console.log('logout')
       commit('clearUserData')
+      commit('setAuthStatus', false)
       router.push('/login')
     },
 
