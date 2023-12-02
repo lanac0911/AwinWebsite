@@ -91,7 +91,7 @@
 
 <style>
 .readonly-input {
-  background-color: #f2f2f2; 
+  background-color: #f2f2f2;
   color: #666;
   cursor: not-allowed;
 }
@@ -99,7 +99,8 @@
 
 <script>
 import { ref } from 'vue'
-import { useStore } from 'vuex'
+import axios from 'axios'
+
 export default {
   setup() {
     const register_form = ref({
@@ -107,14 +108,46 @@ export default {
       name: '',
       password: '',
       mail: '',
-      identify: 'VISITOR',
+      identify: 'VISITOR', // Default value, you might want to adjust it based on your requirements
       github: '',
       Instagram: ''
     })
-    const store = useStore()
 
-    const register = () => {
-      store.dispatch('register', register_form.value)
+    const register = async () => {
+      try {
+        if (
+          !register_form.value.personId ||
+          !register_form.value.name ||
+          !register_form.value.password ||
+          !register_form.value.mail
+        ) {
+          console.error('請填寫所有必填字段')
+          return
+        }
+
+        const newPerson = {
+          personId: register_form.value.personId,
+          name: register_form.value.name,
+          password: register_form.value.password,
+          mail: register_form.value.mail,
+          identify: register_form.value.identify,
+          github: register_form.value.github,
+          instagram: register_form.value.Instagram
+        }
+
+        console.log(newPerson)
+
+        await axios
+          .post('http://localhost:8080/api/person', newPerson)
+          .then((response) => {
+            console.log('註冊成功:', response.data)
+          })
+          .catch((error) => {
+            console.error('註冊期間發生錯誤:', error)
+          })
+      } catch (error) {
+        console.error('發生錯誤:', error)
+      }
     }
 
     return {
