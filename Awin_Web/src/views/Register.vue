@@ -100,9 +100,10 @@
 <script>
 import { ref } from 'vue'
 import axios from 'axios'
-
+import { useStore } from 'vuex'
 export default {
   setup() {
+    const store = useStore()
     const register_form = ref({
       personId: '',
       name: '',
@@ -121,7 +122,7 @@ export default {
           !register_form.value.password ||
           !register_form.value.mail
         ) {
-          console.error('請填寫所有必填字段')
+          alert('請填寫所有必填字段')
           return
         }
 
@@ -140,13 +141,14 @@ export default {
         await axios
           .post('http://localhost:8080/api/person', newPerson)
           .then((response) => {
+            alert('註冊成功，等待教授審核')
             console.log('註冊成功:', response.data)
           })
           .catch((error) => {
-            console.error('註冊期間發生錯誤:', error)
+            alert('註冊期間發生錯誤:', error)
           })
       } catch (error) {
-        console.error('發生錯誤:', error)
+        alert('發生錯誤:', error)
       }
     }
 

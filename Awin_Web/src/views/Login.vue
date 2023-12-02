@@ -39,11 +39,11 @@
 <script>
 import { ref } from 'vue'
 import axios from 'axios'
-import { useStore } from "vuex";
+import { useStore } from 'vuex'
 
 export default {
   setup() {
-    const store = useStore();
+    const store = useStore()
     const login_form = ref({
       personId: '',
       password: ''
@@ -72,18 +72,25 @@ export default {
               axios
                 .get(`http://localhost:8080/api/person/personId/${loginPerson.personId}`)
                 .then((response) => {
-                  store.dispatch("login", response.data);
+                  
+                  let isVisitor = response.data.identify === 'VISITOR'
+                  if (isVisitor) {
+                    alert('您的身分還是訪客，待教授審核通過')
+                  } else {
+                    alert('登入成功')
+                    store.dispatch('login', response.data)
+                  }
                   console.log('Get Person: ', response.data)
                 })
-                .catch((error) => {
-                  console.log('Get Person: ', error)
+                .catch(() => {
+                  alert("取得 Person 資料失敗")
                 })
             } else {
-              console.log('Login Fail')
+              alert("登入失敗")
             }
           })
-          .catch((error) => {
-            console.error('登入期間發生錯誤:', error)
+          .catch(() => {
+            alert("登入失敗，請確認是否有註冊")
           })
       } catch (error) {
         console.error('發生錯誤:', error)

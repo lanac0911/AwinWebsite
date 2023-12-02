@@ -68,9 +68,6 @@ export default defineComponent({
     const breadcrumb = ref("");
     const store = useStore();
 
-    onBeforeMount(() => {
-      store.dispatch("fetchUser");
-    });
     const handleMenuSelect = (key) => {
       // Set breadcrumb based on the selected menu
       switch (key) {

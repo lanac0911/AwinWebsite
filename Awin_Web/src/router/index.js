@@ -3,8 +3,7 @@ import Welcome from '../views/Welcome.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import NewWelcome from '../views/NewWelcome.vue'
-import { auth } from '../firebase'
-
+import { useStore } from 'vuex'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -60,39 +59,39 @@ const router = createRouter({
         {
           path: '',
           components: {
-            'dashboard-view': () => import('../views/Dashboard/Main.vue'),
+            'dashboard-view': () => import('../views/Dashboard/Main.vue')
           },
-          name: 'dashboard-default',
+          name: 'dashboard-default'
         },
         {
           path: 'plan',
           components: {
-            'dashboard-view': () => import('../views/Dashboard/Plan.vue'),
+            'dashboard-view': () => import('../views/Dashboard/Plan.vue')
           },
-          name: 'dashboard-plan',
+          name: 'dashboard-plan'
         },
         {
           path: 'members',
           components: {
-            'dashboard-view': () => import('../views/Dashboard/Members.vue'),
+            'dashboard-view': () => import('../views/Dashboard/Members.vue')
           },
-          name: 'dashboard-members',
+          name: 'dashboard-members'
         },
         {
           path: 'professor',
           components: {
-            'dashboard-view': () => import('../views/Dashboard/Professor.vue'),
+            'dashboard-view': () => import('../views/Dashboard/Professor.vue')
           },
-          name: 'dashboard-professor',
+          name: 'dashboard-professor'
         },
         {
           path: ':page',
           components: {
-            'dashboard-view': () => import('../views/Dashboard/Main.vue'),
+            'dashboard-view': () => import('../views/Dashboard/Main.vue')
           },
-          name: 'dashboard-page',
-        },
-      ],
+          name: 'dashboard-page'
+        }
+      ]
     },
     {
       path: '/newwelcome',
@@ -127,20 +126,6 @@ const router = createRouter({
       }
     }
   ]
-})
-
-router.beforeEach((to, from, next) => {
-  if (to.path === '/login' && auth.currentUser) {
-    next('/')
-    return
-  }
-
-  if (to.matched.some((record) => record.meta.requiresAuth) && !auth.currentUser) {
-    next('/login')
-    return
-  }
-
-  next()
 })
 
 export default router
