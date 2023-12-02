@@ -39,9 +39,11 @@
 <script>
 import { ref } from 'vue'
 import axios from 'axios'
+import { useStore } from "vuex";
 
 export default {
   setup() {
+    const store = useStore();
     const login_form = ref({
       personId: '',
       password: ''
@@ -70,6 +72,7 @@ export default {
               axios
                 .get(`http://localhost:8080/api/person/personId/${loginPerson.personId}`)
                 .then((response) => {
+                  store.dispatch("login", response.data);
                   console.log('Get Person: ', response.data)
                 })
                 .catch((error) => {
