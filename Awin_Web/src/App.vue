@@ -67,11 +67,7 @@ import {
 export default defineComponent({
   components: {},
   setup() {
-    const store = useStore();
 
-    onBeforeMount(() => {
-      store.dispatch("fetchUser");
-    });
     return {
       HomeFilled,
       Menu,
