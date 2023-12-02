@@ -65,7 +65,19 @@ export default {
         await axios
           .get(loginUrl)
           .then((response) => {
-            console.log('登入成功:', response.data)
+            if (response.data === true) {
+              console.log('Login Success')
+              axios
+                .get(`http://localhost:8080/api/person/personId/${loginPerson.personId}`)
+                .then((response) => {
+                  console.log('Get Person: ', response.data)
+                })
+                .catch((error) => {
+                  console.log('Get Person: ', error)
+                })
+            } else {
+              console.log('Login Fail')
+            }
           })
           .catch((error) => {
             console.error('登入期間發生錯誤:', error)
