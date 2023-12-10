@@ -43,17 +43,6 @@
         />
       </div>
 
-      <!-- 身分 -->
-      <div class="mb-4">
-        <input
-          type="text"
-          placeholder="Identify"
-          v-model="register_form.identify"
-          class="w-full p-2 border-b-2 focus:outline-none focus:border-purple-600 readonly-input"
-          readonly
-        />
-      </div>
-
       <!-- Github -->
       <div class="mb-4">
         <input
@@ -123,6 +112,13 @@ export default {
           !register_form.value.mail
         ) {
           alert('請填寫所有必填字段')
+          return
+        }
+
+        // Password validation
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
+        if (!passwordRegex.test(register_form.value.password)) {
+          alert('密碼至少8位，且包含至少一個英文字符')
           return
         }
 
