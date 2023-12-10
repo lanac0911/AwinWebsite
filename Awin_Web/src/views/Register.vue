@@ -138,7 +138,7 @@ export default {
           .then((response) => {
             let isRegistered = response.data.personId === register_form.value.personId
             if (isRegistered) {
-              alert('註冊過了 ! 你是要註冊幾次?')
+              alert('已註冊過!')
             } else {
               registerPerson(newPerson)
             }
