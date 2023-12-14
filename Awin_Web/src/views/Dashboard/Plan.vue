@@ -1,6 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="postBtn">
+      <h2>計畫資訊</h2>
       <el-button size="large" type="primary" @click="clickAdd">＋ 新增</el-button>
       <el-dialog
         @close="handelClose"
@@ -36,7 +37,7 @@
     <div class="tableArea">
       <el-table
         v-loading="isLoading"
-        :data="Data"
+        :data="visibleData"
         stripe
         style="width: 100%; height=250px;"
       >
@@ -52,24 +53,39 @@
         <el-table-column label="Operations" width="150px">
           <template #default="scope">
             <div class="btn-group">
-              <el-button size="small" @click="clickEdit(scope.$index, scope.row)"
-                >編輯</el-button
-              >
+              <el-button size="small" @click="clickEdit(scope.$index, scope.row)">
+                <el-icon :size="size" :color="color">
+                  <Edit />
+                </el-icon>
+                編輯
+              </el-button>
               <el-button
                 size="small"
                 type="danger"
                 @click="handleDelete(scope.$index, scope.row)"
-                >刪除</el-button
               >
+                <el-icon :size="size" :color="color">
+                  <Delete />
+                </el-icon>
+                刪除
+              </el-button>
             </div>
           </template>
         </el-table-column>
       </el-table>
     </div>
+    <div class="pager">
+      <el-pagination
+        v-model="pagination.currentPage"
+        :page-size="pagination.pageSize"
+        :total="pagination.total"
+        @current-change="handlePageChange"
+      />
+    </div>
   </div>
 </template>
 <script>
-import { defineComponent, onMounted, toRaw, ref, reactive, nextTick } from "vue";
+import { defineComponent, onMounted, toRaw, ref, reactive, computed } from "vue";
 import {
   ElIcon,
   ElTable,
@@ -80,6 +96,7 @@ import {
   ElTag,
   vLoading,
   ElMessage,
+  ElPagination,
 } from "element-plus";
 
 // 在需要发送请求的组件中
@@ -95,6 +112,7 @@ export default defineComponent({
     ElDialog,
     ElTag,
     vLoading,
+    ElPagination,
   },
 
   setup() {
@@ -104,6 +122,56 @@ export default defineComponent({
     const formMode = ref("add");
     const selectId = ref();
 
+    const pagination = reactive({
+      currentPage: 1,
+      pageSize: 5,
+    });
+
+    const visibleData = computed(() => {
+      const startIndex = (pagination.currentPage - 1) * pagination.pageSize;
+      const endIndex = startIndex + pagination.pageSize;
+      return Data.value.slice(startIndex, endIndex);
+    });
+
+    const calculateRowHeight = ({ row, rowIndex }) => {
+      // 在这里根据你的数据计算每一行的高度
+      // 例如：return row.someField * 10;
+      // 这里需要根据你的数据结构和具体需求进行计算
+      console.log("calculateRowHeight", row, row.rowHeigh);
+      if (row && row.rowHeight) {
+        return row.rowHeight; // 使用特定的高度
+      } else {
+        return; // 如果 'rowHeight' 不存在，使用默认高度
+      }
+    };
+
+    const calculatePageSize = () => {
+      const tableAreaHeight = document.querySelector(".tableArea").offsetHeight;
+      pagination.pageSize = Math.floor(
+        tableAreaHeight / calculateRowHeight({ row: {}, rowIndex: 0 })
+      );
+    };
+
+    onMounted(() => {
+      // 根据 tableArea 的高度动态计算每页显示的行数
+      const tableAreaHeight = document.querySelector(".tableArea").offsetHeight;
+      const rowHeight = 130; // 假设每行高度为 40 像素
+      pagination.pageSize = Math.floor(tableAreaHeight / rowHeight);
+      // calculatePageSize();
+
+      fetchData(); // 初始加载数据
+    });
+    const calculateTotalPages = () => {
+      // 根据数据列表的长度和每页显示的数量计算总页数
+      const totalItems = Data.value.length;
+      const totalPages = Math.ceil(totalItems / pagination.pageSize);
+      return totalPages;
+    };
+    const handlePageChange = (page) => {
+      pagination.currentPage = page;
+      fetchData(); // 手动调用 fetchData 方法
+    };
+
     const form = ref({
       name: "",
       information: "",
@@ -111,7 +179,6 @@ export default defineComponent({
     });
 
     const handelClose = () => {
-      console.log("close");
       dialogFormVisible.value = false;
       Object.keys(form.value).forEach((key) => {
         form.value[key] = "";
@@ -126,8 +193,7 @@ export default defineComponent({
         .then((response) => {
           // 处理响应数据
           Data.value = toRaw(response.data);
-          console.log(response.data);
-          console.log("vs", Data.value);
+          pagination.total = Data.value.length;
         })
         .catch((error) => {
           ElMessage({
@@ -156,16 +222,14 @@ export default defineComponent({
     };
 
     const handleConfirm = () => {
-      console.log("POST/PUT mode: ", formMode.value, ",data:", form.value);
-      // 发送 POST 请求
-
       if (formMode.value == "edit") {
         axiosInstance
           .put(`/plan/${selectId.value}`, form.value)
           .then((response) => {
-            // 处理成功的响应
-            console.log("PUT Success:", response.data);
-            // 更新表格数据
+            ElMessage({
+              message: response,
+              type: "success",
+            });
             fetchData();
           })
           .catch((error) => {
@@ -182,9 +246,10 @@ export default defineComponent({
         axiosInstance
           .post("/plan", form.value)
           .then((response) => {
-            // 处理成功的响应
-            console.log("POST Success:", response.data);
-            // 更新表格数据
+            ElMessage({
+              message: response,
+              type: "success",
+            });
             fetchData();
           })
           .catch((error) => {
@@ -201,14 +266,11 @@ export default defineComponent({
     };
 
     const handleDelete = (index, row) => {
-      console.log("row=", row.id);
       axiosInstance
         .delete(`/plan/${row.id}`)
         .then((response) => {
           // 处理响应数据
           Data.value = toRaw(response.data);
-          console.log(response.data);
-          console.log("vs", Data.value);
           fetchData();
         })
         .catch((error) => {
@@ -220,8 +282,6 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      // 在组件挂载后执行的逻辑
-      console.log("test");
       fetchData();
     });
 
@@ -236,6 +296,10 @@ export default defineComponent({
       handelClose,
       clickAdd,
       formMode,
+      pagination,
+      calculateTotalPages,
+      handlePageChange,
+      visibleData,
     };
   },
 });
@@ -250,17 +314,25 @@ export default defineComponent({
     width: 100%;
     height: 10%;
     display: flex;
-    justify-content: flex-end;
-    align-items: flex-end;
+    justify-content: space-between;
+    align-items: center;
   }
   .tableArea {
     overflow: auto;
     width: 100%;
     height: 90%;
-    border: 2px solid #000;
     .btn-group {
       display: flex;
     }
+  }
+  h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+  }
+  .pager {
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 }
 </style>

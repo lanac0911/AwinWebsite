@@ -1,6 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="postBtn">
+      <h2>成員資訊</h2>
       <el-button size="large" type="primary" @click="clickAdd">＋ 新增</el-button>
       <el-dialog
         @close="handelClose"
@@ -40,7 +41,7 @@
     </div>
 
     <div class="tableArea">
-      <el-table v-loading="loading" :data="Data" stripe style="width: 100%">
+      <el-table v-loading="loading" :data="visibleData" stripe style="width: 100%">
         <el-table-column prop="name" label="姓名" />
         <el-table-column prop="personId" label="學號" />
         <el-table-column prop="identify" label="身份">
@@ -56,24 +57,39 @@
         <el-table-column label="Operations" width="150px">
           <template #default="scope">
             <div class="btn-group">
-              <el-button size="small" @click="clickEdit(scope.$index, scope.row)"
-                >編輯</el-button
-              >
+              <el-button size="small" @click="clickEdit(scope.$index, scope.row)">
+                <el-icon :size="size" :color="color">
+                  <Edit />
+                </el-icon>
+                編輯
+              </el-button>
               <el-button
                 size="small"
                 type="danger"
                 @click="handleDelete(scope.$index, scope.row)"
-                >刪除</el-button
               >
+                <el-icon :size="size" :color="color">
+                  <Delete />
+                </el-icon>
+                刪除
+              </el-button>
             </div>
           </template>
         </el-table-column>
       </el-table>
     </div>
+    <div class="pager">
+      <el-pagination
+        v-model="pagination.currentPage"
+        :page-size="pagination.pageSize"
+        :total="pagination.total"
+        @current-change="handlePageChange"
+      />
+    </div>
   </div>
 </template>
 <script>
-import { defineComponent, onMounted, toRaw, ref, reactive, nextTick } from "vue";
+import { defineComponent, onMounted, toRaw, ref, reactive, computed } from "vue";
 import {
   ElIcon,
   ElTable,
@@ -83,7 +99,7 @@ import {
   ElSelect,
   ElTag,
   ElMessage,
-  ElNotification,
+  ElPagination,
 } from "element-plus";
 
 // 在需要发送请求的组件中
@@ -99,6 +115,7 @@ export default defineComponent({
     ElButton,
     ElDialog,
     ElTag,
+    ElPagination,
   },
 
   setup() {
@@ -107,6 +124,29 @@ export default defineComponent({
     const dialogFormVisible = ref(false);
     const formMode = ref("add");
     const selectId = ref();
+    const pagination = reactive({
+      currentPage: 1,
+      pageSize: 5,
+    });
+
+    const visibleData = computed(() => {
+      const startIndex = (pagination.currentPage - 1) * pagination.pageSize;
+      const endIndex = startIndex + pagination.pageSize;
+      return Data.value.slice(startIndex, endIndex);
+    });
+    onMounted(() => {
+      // 根据 tableArea 的高度动态计算每页显示的行数
+      const tableAreaHeight = document.querySelector(".tableArea").offsetHeight;
+      const rowHeight = 45; // 假设每行高度为 40 像素
+      pagination.pageSize = Math.floor(tableAreaHeight / rowHeight);
+      fetchData(); // 初始加载数据
+    });
+    const calculateTotalPages = () => {
+      // 根据数据列表的长度和每页显示的数量计算总页数
+      const totalItems = Data.value.length;
+      const totalPages = Math.ceil(totalItems / pagination.pageSize);
+      return totalPages;
+    };
 
     const form = ref({
       personId: "",
@@ -131,12 +171,25 @@ export default defineComponent({
       });
     };
 
+    const handlePageChange = (page) => {
+      pagination.currentPage = page;
+      fetchData(); // 手动调用 fetchData 方法
+    };
+
     const fetchData = () => {
+      const params = {
+        page: pagination.currentPage,
+        size: pagination.pageSize,
+      };
+
       axiosInstance
-        .get("/person/all")
+        .get("/person/all", { params })
         .then((response) => {
-          // 处理响应数据
           Data.value = toRaw(response.data);
+
+          // 从响应数据中获取总记录数
+          const total = response.data.length; // 假设响应数据中有一个字段表示总记录数
+          pagination.total = total;
         })
         .catch((error) => {
           ElMessage({
@@ -253,6 +306,10 @@ export default defineComponent({
       handelClose,
       clickAdd,
       formMode,
+      pagination,
+      calculateTotalPages,
+      handlePageChange,
+      visibleData,
     };
   },
 });
@@ -267,16 +324,27 @@ export default defineComponent({
     width: 100%;
     height: 10%;
     display: flex;
-    justify-content: flex-end;
-    align-items: flex-end;
+    justify-content: space-between;
+    align-items: center;
   }
   .tableArea {
     width: 100%;
     height: 90%;
-    border: 2px solid #000;
+    overflow-y: auto;
     .btn-group {
       display: flex;
     }
+  }
+
+  .pager {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
   }
 }
 </style>

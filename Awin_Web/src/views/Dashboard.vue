@@ -31,12 +31,6 @@
     </div>
 
     <div class="mainTable">
-      <duv class="bread">
-        <h2>
-          {{ breadcrumb }}
-          {{ $route.params.page }}
-        </h2>
-      </duv>
       <div class="tableArea">
         <router-view name="dashboard-view" />
       </div>
@@ -45,54 +39,54 @@
 </template>
 
 <script>
-import { defineComponent, onBeforeMount, onMounted, ref } from 'vue'
-import { ElIcon, ElMenu, ElTable, ElButton } from 'element-plus'
-import { Location, Document } from '@element-plus/icons-vue'
-import { Timer } from '@element-plus/icons-vue'
-import { useRoute, useRouter } from 'vue-router'
+import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
+import { ElIcon, ElMenu, ElTable, ElButton } from "element-plus";
+import { Location, Document } from "@element-plus/icons-vue";
+import { Timer } from "@element-plus/icons-vue";
+import { useRoute, useRouter } from "vue-router";
 // 在需要发送请求的组件中
-import axiosInstance from '@/axios'
-import { useStore } from 'vuex'
+import axiosInstance from "@/axios";
+import { useStore } from "vuex";
 
 export default defineComponent({
   components: {
     ElIcon,
     ElMenu,
     ElTable,
-    ElButton
+    ElButton,
   },
   setup() {
-    const router = useRouter()
-    const activeMenu = ref('dashboard')
-    const isCollapse = ref(false)
-    const breadcrumb = ref('')
-    const store = useStore()
+    const router = useRouter();
+    const activeMenu = ref("dashboard");
+    const isCollapse = ref(false);
+    const breadcrumb = ref("");
+    const store = useStore();
     onBeforeMount(() => {
-      store.dispatch('fetchUser')
-    })
+      store.dispatch("fetchUser");
+    });
     const handleMenuSelect = (key) => {
       // Set breadcrumb based on the selected menu
       switch (key) {
-        case 'plan':
-          breadcrumb.value = '計畫'
-          break
-        case 'professor':
-          breadcrumb.value = '教授資料'
-          break
-        case 'members':
-          breadcrumb.value = '成員'
-          break
+        case "plan":
+          breadcrumb.value = "計畫";
+          break;
+        case "professor":
+          breadcrumb.value = "教授資料";
+          break;
+        case "members":
+          breadcrumb.value = "成員";
+          break;
         default:
-          breadcrumb.value = ''
+          breadcrumb.value = "";
       }
-      router.push(`/dashboard/${key}`)
-    }
+      router.push(`/dashboard/${key}`);
+    };
 
     onMounted(() => {
       // 在组件挂载后执行的逻辑
-      console.log('test')
+      console.log("test");
       // fetchData()
-    })
+    });
 
     return {
       activeMenu,
@@ -101,10 +95,10 @@ export default defineComponent({
       handleMenuSelect,
       Location,
       Document,
-      store
-    }
-  }
-})
+      store,
+    };
+  },
+});
 </script>
 
 <style scoped lang="scss">
