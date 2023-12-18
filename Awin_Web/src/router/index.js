@@ -64,6 +64,13 @@ const router = createRouter({
           name: 'dashboard-default'
         },
         {
+          path: 'user',
+          components: {
+            'dashboard-view': () => import('../views/Dashboard/User.vue')
+          },
+          name: 'dashboard-user'
+        },
+        {
           path: 'plan',
           components: {
             'dashboard-view': () => import('../views/Dashboard/Plan.vue')
@@ -132,10 +139,17 @@ router.beforeEach((to, from, next) => {
   const store = useStore()
   const isAuthenticated = store.state.isAuthenticated
 
+  // 检查本地存储中是否有认证信息
+  const storedAuth = localStorage.getItem('isAuthenticated');
+  if (storedAuth) {
+    store.commit('setAuthentication', true);
+  }
+  console.log("storedAuth",isAuthenticated)
+
   if (to.matched.some((record) => record.meta.requiresAuth) && !isAuthenticated) {
-    next('/login')
+    next('/login');
   } else {
-    next()
+    next();
   }
 })
 export default router

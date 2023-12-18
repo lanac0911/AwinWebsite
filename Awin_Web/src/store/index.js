@@ -6,16 +6,16 @@ import { useStore } from 'vuex'
 export default createStore({
   state: {
     isAuthenticated: false,
-    userData: null
+    userData: null,
   },
   mutations: {
     setAuthStatus(state, isAuthenticated) {
       state.isAuthenticated = isAuthenticated
     },
     setUserData(state, userData) {
+      console.log("$$$$$$$$$$$$setUserData", userData)
       state.userData = userData
     },
-
     clearUserData(state) {
       console.log('clearUserData')
       state.userData = null
@@ -24,7 +24,7 @@ export default createStore({
 
   actions: {
     async login({ commit }, personInfo) {
-      console.log('login')
+      console.log('login222', personInfo)
       commit('setUserData', personInfo)
       commit('setAuthStatus', true)
       router.push('/dashboard')

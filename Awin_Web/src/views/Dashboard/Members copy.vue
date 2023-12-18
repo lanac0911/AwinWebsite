@@ -24,29 +24,23 @@
 
           <el-form-item label="成員">
             <el-tag
-              v-for="person in dynamicPerson"
-              id="tableTag"
+              v-for="person in form.persons"
               :key="person.id"
               closable
               :disable-transitions="false"
-              @close="handleTagClose(person)"
+              @close="handleClose(person)"
             >
               {{ person.name }}
             </el-tag>
-            <el-select
+            <el-input
               v-if="inputVisible"
+              ref="InputRef"
               v-model="inputValue"
-              filterable
-              placeholder="Select"
-              @change="handleInputConfirm"
-            >
-              <el-option
-                v-for="person in allPerson"
-                :key="person.id"
-                :label="person.name"
-                :value="person"
-              />
-            </el-select>
+              class="ml-1 w-20"
+              size="small"
+              @keyup.enter="handleInputConfirm"
+              @blur="handleInputConfirm"
+            />
             <el-button v-else class="button-new-tag ml-1" size="small" @click="showInput">
               + 新增人員
             </el-button>
@@ -74,10 +68,7 @@
         <el-table-column prop="name" label="計畫名稱" />
         <el-table-column prop="planStatus" label="狀態">
           <template #default="scope">
-            <el-tag
-              effect="dark"
-              :type="scope.row.planStatus === 'PROCESS' ? 'success' : 'info'"
-            >
+            <el-tag :type="scope.row.planStatus === 'PROCESS' ? 'success' : 'info'">
               {{ scope.row.planStatus }}
             </el-tag>
           </template>
@@ -85,12 +76,7 @@
         <el-table-column prop="information" label="詳細資訊" />
         <el-table-column prop="persons" label="成員">
           <template #default="scope">
-            <el-tag
-              effect="plain"
-              v-for="person in scope.row.persons"
-              :key="person.id"
-              id="tableTag"
-            >
+            <el-tag v-for="person in scope.row.persons" :key="person.id">
               {{ person.name }}
             </el-tag>
           </template>
@@ -100,7 +86,6 @@
             <div class="btn-group">
               <el-button
                 type="warning"
-                plain
                 :disabled="userData.identify !== 'TEACHER' ? true : false"
                 size="small"
                 @click="clickEdit(scope.$index, scope.row)"
@@ -111,7 +96,6 @@
                 編輯
               </el-button>
               <el-button
-                plain
                 :disabled="userData.identify !== 'TEACHER' ? true : false"
                 size="small"
                 type="danger"
@@ -185,7 +169,6 @@ export default defineComponent({
     const selectId = ref();
     const store = useStore();
     const userData = computed(() => store.state.userData);
-    const dynamicPerson = ref([]);
 
     const pagination = reactive({
       currentPage: 1,
@@ -201,21 +184,23 @@ export default defineComponent({
     const inputVisible = ref(false);
     const planPeople = ref([]);
     const InputRef = ref(null);
-    const allPerson = ref([]);
 
     // add paln person
-    const handleTagClose = (tag) => {
-      dynamicPerson.value.splice(dynamicPerson.value.indexOf(tag), 1);
+    const handleClose = (tag) => {
+      // this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
       console.log("handleClose tag:", tag);
     };
     const showInput = () => {
       inputVisible.value = true;
+      nextTick(() => {
+        // this.InputRef.input.focus();
+        InputRef.value.input.focus();
+      });
     };
-    const handleInputConfirm = (value, option) => {
-      console.log("###1 value", value);
-      console.log("###2 dynamicPerson", dynamicPerson.value);
-      dynamicPerson.value.push(value);
-      console.log("選中後的", dynamicPerson.value);
+    const handleInputConfirm = () => {
+      // if (inputValue.value) {
+      // this.dynamicTags.push(this.inputValue)
+      // }
       inputVisible.value = false;
       inputValue.value = "";
     };
@@ -248,15 +233,12 @@ export default defineComponent({
     });
 
     const handelClose = () => {
-      console.log("###3 handelClose", dynamicPerson.value);
-
       dialogFormVisible.value = false;
       Object.keys(form.value).forEach((key) => {
         if (key != "persons") form.value[key] = "";
       });
       form.value.planStatus = "PROCESS";
       form.value.persons = [];
-      dynamicPerson.value = [];
     };
 
     const fetchData = () => {
@@ -267,7 +249,6 @@ export default defineComponent({
           // 处理响应数据
           Data.value = toRaw(response.data);
           pagination.total = Data.value.length;
-          console.log("Data Plan", Data.value);
         })
         .catch((error) => {
           ElMessage({
@@ -278,16 +259,6 @@ export default defineComponent({
         .finally(() => {
           isLoading.value = false;
         });
-
-      axiosInstance
-        .get("/person/all")
-        .then((response) => {
-          allPerson.value = toRaw(response.data);
-          console.log("Data Person", allPerson.value);
-        })
-        .catch(() => {
-          console.warn("Get All person wrong");
-        });
     };
 
     const clickAdd = () => {
@@ -296,7 +267,6 @@ export default defineComponent({
     };
 
     const clickEdit = (index, row) => {
-      console.log("電擊edit");
       formMode.value = "edit";
       // 帶入表單
       form.value.name = row.name;
@@ -306,8 +276,6 @@ export default defineComponent({
       planPeople.value = row.person;
       dialogFormVisible.value = true;
       selectId.value = row.id;
-      dynamicPerson.value = row.persons;
-      console.log("電擊edit agetr:", dynamicPerson.value);
     };
 
     const handleConfirm = () => {
@@ -316,7 +284,7 @@ export default defineComponent({
           .put(`/plan/${selectId.value}`, form.value)
           .then((response) => {
             ElMessage({
-              message: "1" + response,
+              message: response,
               type: "success",
             });
             fetchData();
@@ -336,7 +304,7 @@ export default defineComponent({
           .post("/plan", form.value)
           .then((response) => {
             ElMessage({
-              message: "2" + response,
+              message: response,
               type: "success",
             });
             fetchData();
@@ -390,13 +358,11 @@ export default defineComponent({
       handlePageChange,
       visibleData,
       userData,
-      handleTagClose,
+      handleClose,
       showInput,
       handleInputConfirm,
       inputValue,
       inputVisible,
-      allPerson,
-      dynamicPerson,
     };
   },
 });
@@ -427,14 +393,9 @@ export default defineComponent({
     font-weight: bold;
   }
   .pager {
-    margin-top: 1rem;
     width: 100%;
     display: flex;
     justify-content: center;
-  }
-
-  #tableTag {
-    margin-right: 5px;
   }
 }
 </style>

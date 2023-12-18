@@ -4,18 +4,41 @@
       <div class="card" v-for="(info, index) in Data" :key="index">
         <div class="imgArea">
           <div class="question"><span>?</span></div>
-          <el-image class="realImg" :src="url" fit="cover" />
+          <el-image
+            v-if="info.image"
+            class="realImg"
+            :src="'data:image/png;base64,' + info.image"
+            fit="cover"
+          />
+          <el-image
+            v-else
+            class="realImg"
+            :src="'https://banffventureforum.com/wp-content/uploads/2019/08/No-Image.png'"
+            fit="cover"
+          />
         </div>
         <div class="infoArea">
           <div class="icons">
             <div class="icon">
-              <img src="@/assets/envelope.png" />
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="info.mail"
+                placement="top"
+              >
+                <img src="@/assets/envelope.png" />
+              </el-tooltip>
             </div>
             <div class="icon">
-              <img src="@/assets/github.png" />
-            </div>
-            <div class="icon">
-              <img src="@/assets/instagram.png" />
+              <el-tooltip
+                v-if="info.instagram"
+                class="box-item"
+                effect="dark"
+                :content="info.instagram"
+                placement="top"
+              >
+                <img src="@/assets/browser.png" />
+              </el-tooltip>
             </div>
           </div>
           <div class="text">
@@ -31,9 +54,9 @@
 <script>
 import { defineComponent, onMounted, ref, toRaw } from "vue";
 import axiosInstance from "@/axios";
-
+import { ElImage } from "element-plus";
 export default defineComponent({
-  components: {},
+  components: { ElImage },
   setup() {
     const Data = ref([]);
     const url = "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg";
@@ -96,10 +119,10 @@ export default defineComponent({
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@900&display=swap");
 span,
 p {
-  color: #fff;
+  color: #000000;
 }
 .question span {
-  color: #81679a !important;
+  color: #05a5ba !important;
 }
 
 .imgArea {
@@ -168,7 +191,8 @@ p {
 .card:hover {
   transform: scale(1.2); /* 鼠标悬停时放大到 1.1 倍 */
   z-index: 4;
-  background-color: rgb(34, 32, 32);
+  background-color: rgb(255, 255, 255);
+  box-shadow: 2px 2px 3px 0px #ababab;
   cursor: pointer;
   border: none;
   border-radius: 1em;
@@ -187,6 +211,8 @@ p {
 
 .card:hover .realImg {
   display: flex !important;
+  border-top-left-radius: 1em;
+  border-top-right-radius: 1em;
 }
 
 .card .realImg {
@@ -213,6 +239,7 @@ p {
   padding: 3rem;
   justify-content: center;
   align-items: center;
+  padding-bottom: 7rem;
 }
 .cardArea {
   background-color: transparent;
@@ -229,7 +256,7 @@ p {
 
 .card {
   z-index: 3;
-  width: calc(100% / 6); /* 考慮 gutter 的寬度，這裡是四等分 */
+  width: calc(100% / 5); /* 考慮 gutter 的寬度，這裡是四等分 */
   height: calc((100% / 4) * 1.5);
 
   margin: 0; /* 清除 margin */

@@ -15,8 +15,8 @@
         </el-form>
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="handelClose">Cancel</el-button>
-            <el-button type="primary" @click="handleConfirm()"> Confirm </el-button>
+            <el-button @click="handelClose">取消</el-button>
+            <el-button type="primary" @click="handleConfirm()"> 送出 </el-button>
           </span>
         </template>
       </el-dialog>
@@ -33,13 +33,21 @@
         <el-table-column label="Operations" width="150px">
           <template #default="scope">
             <div class="btn-group">
-              <el-button size="small" @click="clickEdit(scope.$index, scope.row)">
+              <el-button
+                plain
+                type="warning"
+                :disabled="userData.identify !== 'TEACHER' ? true : false"
+                size="small"
+                @click="clickEdit(scope.$index, scope.row)"
+              >
                 <el-icon :size="size" :color="color">
                   <Edit />
                 </el-icon>
                 編輯
               </el-button>
               <el-button
+                plain
+                :disabled="userData.identify !== 'TEACHER' ? true : false"
                 size="small"
                 type="danger"
                 @click="handleDelete(scope.$index, scope.row)"
@@ -62,7 +70,6 @@
         @current-change="handlePageChange"
       />
     </div>
-    <span>{{ pagination }}</span>
   </div>
 </template>
 <script>
@@ -77,6 +84,7 @@ import {
   ElMessage,
   ElPagination,
 } from "element-plus";
+import { useStore } from "vuex";
 
 // 在需要发送请求的组件中
 import axiosInstance from "@/axios";
@@ -93,6 +101,8 @@ export default defineComponent({
   },
 
   setup() {
+    const store = useStore();
+    const userData = computed(() => store.state.userData);
     const Data = ref([]);
     const isLoading = ref(false);
     const dialogFormVisible = ref(false);
@@ -260,6 +270,7 @@ export default defineComponent({
       calculateTotalPages,
       handlePageChange,
       visibleData,
+      userData,
     };
   },
 });
@@ -290,6 +301,7 @@ export default defineComponent({
     font-weight: bold;
   }
   .pager {
+    margin-top: 1rem;
     width: 100%;
     display: flex;
     justify-content: center;

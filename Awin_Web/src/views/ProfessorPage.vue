@@ -34,9 +34,9 @@
                   {{ scope.row.now ? "✔︎" : "" }}
                 </template>
               </el-table-column>
-              <el-table-column prop="office" label="服務機關" width="120" />
-              <el-table-column prop="depart" label="服務部門" width="120" />
-              <el-table-column prop="title" label="職稱" width="80" />
+              <el-table-column prop="office" label="服務機關" width="150" />
+              <el-table-column prop="depart" label="服務部門" width="150" />
+              <el-table-column prop="title" label="職稱" width="120" />
               <el-table-column prop="date" label="起訖年月" width="150" />
             </el-table>
           </el-tab-pane>
@@ -49,6 +49,11 @@
               <p>Mail： {{ Contat.mail }}</p>
             </div>
           </el-tab-pane>
+          <el-tab-pane label="papers">
+            <el-table :data="Data" style="width: 100%; height=25px;">
+              <el-table-column prop="item" label="論文" />
+            </el-table>
+          </el-tab-pane>
         </el-tabs>
       </div>
     </div>
@@ -56,12 +61,14 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
-import { ElTabs } from "element-plus";
+import { defineComponent, onMounted, ref, toRaw } from "vue";
+import { ElTabs, ElMessage, ElTable } from "element-plus";
+import axiosInstance from "@/axios";
 
 export default defineComponent({
   components: {
     ElTabs,
+    ElTable,
   },
   setup() {
     const intro =
@@ -181,12 +188,32 @@ export default defineComponent({
       tax: "886-4-22853869",
       mail: "huan@nchu.edu.tw",
     };
+    const Data = ref([]);
+
+    const fetchData = () => {
+      axiosInstance
+        .get("/scholar/all")
+        .then((response) => {
+          Data.value = toRaw(response.data);
+        })
+        .catch((error) => {
+          ElMessage({
+            message: error,
+            type: "warning",
+          });
+        });
+    };
+
+    onMounted(() => {
+      fetchData(); // 初始加载数据
+    });
 
     return {
       intro,
       Educ,
       Expr,
       Contat,
+      Data,
     };
   },
 });
@@ -196,11 +223,11 @@ export default defineComponent({
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@900&display=swap");
 span,
 p {
-  color: #fff;
+  color: #000000;
 }
 :deep(.el-tabs__item.is-active) {
   color: #fff !important;
-  background-color: #8167a9 !important;
+  background-color: #05a5ba !important;
 }
 :deep(.el-tabs__item) {
   font-weight: bold;
@@ -210,18 +237,18 @@ p {
 }
 :deep(.el-table, .el-table__expanded-cell) {
   background-color: transparent;
-  color: #fff;
+  color: #000000;
 }
 :deep(.el-table th) {
-  background-color: #fff;
-  color: #000;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fdfdfd;
   font-weight: bold;
 }
 :deep(.el-table tr) {
   background-color: transparent;
 }
 ::v-deep .el-table--enable-row-hover .el-table__body tr:hover > td {
-  background-color: #8167a9;
+  background-color: #05a5ba;
   color: rgb(40, 38, 38);
 }
 
@@ -258,13 +285,13 @@ p {
 
 .title span {
   font-family: "Poppins", sans-serif;
-  color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
   font-size: 4rem;
 }
 #highlight {
-  background: #8167a9;
+  background: #05a5ba;
   padding: 0 0.8rem;
-  color: rgb(34, 32, 32);
+  color: rgb(255, 255, 255);
 }
 
 .tabPage {

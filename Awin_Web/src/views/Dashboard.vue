@@ -9,24 +9,49 @@
         text-color="#fff"
         @select="handleMenuSelect"
       >
+        <el-menu-item class="userArea" index="user">
+          <div class="AreaItem">
+            <el-avatar :size="80">{{ userData.name }}</el-avatar>
+            <el-tag
+              class="tag"
+              effect="dark"
+              :type="userData.identify === 'STUDENT' ? 'primary' : 'success'"
+            >
+              {{ userData.identify }}
+            </el-tag>
+          </div>
+        </el-menu-item>
         <el-menu-item index="plan">
           <el-icon><document /></el-icon>
           <span>計畫</span>
         </el-menu-item>
         <el-menu-item index="professor">
-          <el-icon size="large">
-            <Location />
-          </el-icon>
-          <span>教授資料</span>
+          <el-icon><Management /></el-icon>
+          <span>論文</span>
         </el-menu-item>
         <el-menu-item index="members">
-          <el-icon><document /></el-icon>
+          <el-icon><Avatar /></el-icon>
           <span>成員</span>
         </el-menu-item>
       </el-menu>
       <div class="goBack">
-        <router-link to="/">Go Back</router-link>
-        <button @click="$store.dispatch('logout')">Logout</button>
+        <router-link to="/">
+          <el-button
+            plain
+            type="info"
+            style="margin-right: 1rem; margin-bottom: 0.5rem"
+            round
+            >回前台</el-button
+          >
+        </router-link>
+        <el-button
+          plain
+          @click="$store.dispatch('logout')"
+          style="margin-right: 1rem; margin-bottom: 0.5rem"
+          type="danger"
+          round
+          >登出</el-button
+        >
       </div>
     </div>
 
@@ -39,8 +64,8 @@
 </template>
 
 <script>
-import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
-import { ElIcon, ElMenu, ElTable, ElButton } from "element-plus";
+import { defineComponent, onBeforeMount, onMounted, ref, computed } from "vue";
+import { ElIcon, ElMenu, ElTable, ElButton, ElTag, ElAvatar } from "element-plus";
 import { Location, Document } from "@element-plus/icons-vue";
 import { Timer } from "@element-plus/icons-vue";
 import { useRoute, useRouter } from "vue-router";
@@ -54,13 +79,16 @@ export default defineComponent({
     ElMenu,
     ElTable,
     ElButton,
+    ElTag,
+    ElAvatar,
   },
   setup() {
+    const store = useStore();
+    const userData = computed(() => store.state.userData);
     const router = useRouter();
     const activeMenu = ref("dashboard");
     const isCollapse = ref(false);
     const breadcrumb = ref("");
-    const store = useStore();
     onBeforeMount(() => {
       store.dispatch("fetchUser");
     });
@@ -96,20 +124,37 @@ export default defineComponent({
       Location,
       Document,
       store,
+      userData,
     };
   },
 });
 </script>
 
 <style scoped lang="scss">
+.AreaItem {
+  height: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.userArea {
+  justify-content: center;
+  height: 20%;
+}
 .navBar {
   height: 100% !important;
-  width: 20% !important;
+  width: 15% !important;
   .goBack {
     color: red;
     position: absolute;
     bottom: 0;
     margin-left: 1rem;
+  }
+
+  span {
+    font-size: 1.2rem;
   }
 }
 
@@ -128,10 +173,13 @@ export default defineComponent({
   padding: 3rem;
   h2 {
     color: #000;
+    font-size: 1.1rem;
     font-weight: bold;
   }
 }
-
+.tag {
+  margin-top: 1rem;
+}
 .dashboard {
   height: 100%;
   width: 100%;
@@ -143,5 +191,12 @@ export default defineComponent({
 .el-menu {
   width: 100%;
   height: 100%;
+  background-color: #05a5ba;
+}
+
+.realImg {
+  height: 8rem;
+  width: 8rem;
+  border-radius: 100%;
 }
 </style>
