@@ -5,7 +5,7 @@
       <el-dialog
         @close="handelClose"
         v-model="dialogFormVisible"
-        :title="formMode == 'eidt' ? '＃編輯' : '#新增'"
+        :title="formMode == 'edit' ? '＃編輯' : '#新增'"
       >
         <el-form :model="form">
           <el-form-item label="Name">

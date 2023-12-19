@@ -2,7 +2,17 @@
   <div class="wrapper">
     <div class="postBtn">
       <h2>成員資訊</h2>
-      <el-button size="large" type="primary" @click="clickAdd">＋ 新增</el-button>
+      <div class="right">
+        <div class="searchBar">
+          <el-input class="inputBar" v-model="search" size="large" placeholder="搜尋">
+            <template #prefix>
+              <el-icon class="el-input__icon"><search /></el-icon>
+            </template>
+          </el-input>
+        </div>
+        <el-button size="large" type="primary" @click="clickAdd">＋ 新增</el-button>
+      </div>
+
       <el-dialog
         @close="handelClose"
         v-model="dialogFormVisible"
@@ -19,6 +29,8 @@
             <el-select v-model="form.identify" placeholder="選擇身份" allow-create>
               <el-option label="STUDENT" value="STUDENT" />
               <el-option label="TEACHER" value="TEACHER" />
+              <el-option label="TEACHER" value="GRADUATE" />
+              <el-option label="TEACHER" value="VISITOR" />
             </el-select>
           </el-form-item>
 
@@ -81,10 +93,7 @@
         <el-table-column prop="personId" label="學號" />
         <el-table-column prop="identify" label="身份">
           <template #default="scope">
-            <el-tag
-              effect="dark"
-              :type="scope.row.identify === 'STUDENT' ? 'primary' : 'success'"
-            >
+            <el-tag effect="dark" :type="getTagType(scope.row.identify)">
               {{ scope.row.identify }}
             </el-tag>
           </template>
@@ -221,11 +230,28 @@ export default defineComponent({
     const disabled = ref(false);
     const fileList1 = ref([]);
     const editPersonID = ref(null);
+    const search = ref("");
 
     const visibleData = computed(() => {
       const startIndex = (pagination.currentPage - 1) * pagination.pageSize;
       const endIndex = startIndex + pagination.pageSize;
-      return Data.value.slice(startIndex, endIndex);
+      const filteredData = Data.value.filter((item) => {
+        return (
+          (item.name && item.name.toLowerCase().includes(search.value.toLowerCase())) ||
+          (item.personId &&
+            item.personId.toLowerCase().includes(search.value.toLowerCase())) ||
+          (item.identify &&
+            item.identify.toLowerCase().includes(search.value.toLowerCase())) ||
+          (item.mail && item.mail.toLowerCase().includes(search.value.toLowerCase())) ||
+          (item.instagram &&
+            item.instagram.toLowerCase().includes(search.value.toLowerCase()))
+        );
+      });
+
+      // Reverse the order of the filtered data
+      const reversedData = filteredData.slice().reverse();
+
+      return reversedData.slice(startIndex, endIndex);
     });
 
     onMounted(() => {
@@ -242,7 +268,20 @@ export default defineComponent({
       return totalPages;
     };
     const imageUrl = ref("");
-
+    const getTagType = (identify) => {
+      switch (identify) {
+        case "STUDENT":
+          return "primary";
+        case "TEACHER":
+          return "success";
+        case "VISITOR":
+          return "danger";
+        case "GRADUATE":
+          return "info";
+        default:
+          return "default"; // You can set a default type or customize it as needed
+      }
+    };
     const changeFile1 = (file, fileList) => {
       console.log("onchane file", file);
       console.log("onchane fileList", fileList);
@@ -340,6 +379,7 @@ export default defineComponent({
     };
 
     const putImg = (file, user) => {
+      console.log("!!!!!!!!!!putImg:", file, editPersonID.value);
       const formData = new FormData();
       // 将上传的文件添加到 FormData 中
       formData.append("file", file.raw);
@@ -368,6 +408,7 @@ export default defineComponent({
     const handleConfirm = () => {
       // 发送 POST 请求
       loading.value = true;
+      const resD = ref();
 
       console.log(
         `事前檢查：ID${editPersonID.value}, mode: ${formMode.value}, file:${fileList1.value[0]}`
@@ -408,11 +449,9 @@ export default defineComponent({
             // 处理成功的响应
             console.log("POST Success:", response.data);
             // 更新表格数据
-
-            if (imageUrl.value) {
-              putImg(fileList1.value[0], response.data);
-            }
-            fetchData();
+            resD.value = response.data;
+            editPersonID.value = resD.value.id;
+            console.log("新稱的結果", resD.value);
           })
           .catch((error) => {
             ElMessage({
@@ -425,6 +464,8 @@ export default defineComponent({
             // 无论成功还是失败，都可以在这里执行一些逻辑
             dialogFormVisible.value = false; // 隐藏对话框等
             loading.value = false;
+
+            putImg(fileList1.value[0], resD.value);
             fetchData();
           });
       }
@@ -506,6 +547,8 @@ export default defineComponent({
       userData,
       handelPsw,
       openPsw,
+      getTagType,
+      search,
       selectId,
     };
   },
@@ -580,6 +623,20 @@ export default defineComponent({
   a {
     color: #8b8a8a;
     text-decoration: underline;
+  }
+  .right {
+    width: 70%;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .searchBar {
+    width: 30%;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 1rem;
+    .inputBar {
+      width: 100%;
+    }
   }
 }
 </style>

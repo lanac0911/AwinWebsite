@@ -1,7 +1,7 @@
 <template>
   <main class="home">
     <el-dialog width="30%" @close="handelClose" v-model="isOpen" title="更改密碼">
-      <el-form :rules="rules" ref="ruleFormRef" :model="form">
+      <el-form ref="ruleFormRef" :model="form">
         <el-form-item required label="原密碼">
           <el-input v-model="form.oldPass" />
         </el-form-item>
@@ -45,13 +45,31 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const internalIsOpen = ref(props.isOpen);
+    const ruleFormRef = ref();
 
     const form = ref({
       oldPass: "",
       password: "",
     });
 
+    // 檢查密碼是否符合條件的函式
+    const isPasswordValid = (password) => {
+      // 密碼至少包含1個英文和1個數字，且長度至少為8
+      const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+      return passwordPattern.test(password);
+    };
+
     const handleConfirm = () => {
+      // 檢查密碼是否符合條件
+      if (!isPasswordValid(form.value.password)) {
+        ElMessage({
+          duration: 3000,
+          message: "密碼至少包含1個英文和1個數字，且長度至少為8",
+          type: "warning",
+        });
+        return;
+      }
+
       console.log("ready ");
       const old = form.value.oldPass;
       const body = {
@@ -86,7 +104,6 @@ export default defineComponent({
       emit("update:isOpen", false);
     };
 
-    // 使用 watch 監聽 isOpen 的變化
     watch(
       () => props.isOpen,
       (newVal) => {
@@ -100,6 +117,7 @@ export default defineComponent({
       form,
       handleConfirm,
       handelClose,
+      ruleFormRef,
     };
   },
 });

@@ -1,12 +1,21 @@
 <template>
   <div class="wrapper">
     <div class="postBtn">
-      <h2>計畫資訊</h2>
-      <el-button size="large" type="primary" @click="clickAdd">＋ 新增</el-button>
+      <h2>成員資訊</h2>
+      <div class="right">
+        <div class="searchBar">
+          <el-input class="inputBar" v-model="search" size="large" placeholder="搜尋">
+            <template #prefix>
+              <el-icon class="el-input__icon"><search /></el-icon>
+            </template>
+          </el-input>
+        </div>
+        <el-button size="large" type="primary" @click="clickAdd">＋ 新增</el-button>
+      </div>
       <el-dialog
         @close="handelClose"
         v-model="dialogFormVisible"
-        :title="formMode == 'eidt' ? '＃編輯' : '#新增'"
+        :title="formMode == 'edit' ? '＃編輯' : '#新增'"
       >
         <el-form :model="form">
           <el-form-item label="計畫名稱">
@@ -186,6 +195,7 @@ export default defineComponent({
     const store = useStore();
     const userData = computed(() => store.state.userData);
     const dynamicPerson = ref([]);
+    const search = ref("");
 
     const pagination = reactive({
       currentPage: 1,
@@ -195,7 +205,24 @@ export default defineComponent({
     const visibleData = computed(() => {
       const startIndex = (pagination.currentPage - 1) * pagination.pageSize;
       const endIndex = startIndex + pagination.pageSize;
-      return Data.value.slice(startIndex, endIndex);
+
+      // Filter the data based on the search term
+      const filteredData = Data.value.filter((item) => {
+        return (
+          item.name.toLowerCase().includes(search.value.toLowerCase()) ||
+          item.planStatus.toLowerCase().includes(search.value.toLowerCase()) ||
+          // Add more fields to search as needed
+          item.information.toLowerCase().includes(search.value.toLowerCase()) ||
+          item.persons.some((person) =>
+            person.name.toLowerCase().includes(search.value.toLowerCase())
+          )
+        );
+      });
+
+      // Apply pagination to the filtered data
+      const paginatedData = filteredData.slice(startIndex, endIndex);
+
+      return paginatedData;
     });
     const inputValue = ref("");
     const inputVisible = ref(false);
@@ -316,7 +343,7 @@ export default defineComponent({
           .put(`/plan/${selectId.value}`, form.value)
           .then((response) => {
             ElMessage({
-              message: "1" + response,
+              message: "修改成功" + response,
               type: "success",
             });
             fetchData();
@@ -336,7 +363,7 @@ export default defineComponent({
           .post("/plan", form.value)
           .then((response) => {
             ElMessage({
-              message: "2" + response,
+              message: "新增成功" + response,
               type: "success",
             });
             fetchData();
@@ -397,6 +424,7 @@ export default defineComponent({
       inputVisible,
       allPerson,
       dynamicPerson,
+      search,
     };
   },
 });
@@ -435,6 +463,21 @@ export default defineComponent({
 
   #tableTag {
     margin-right: 5px;
+  }
+
+  .right {
+    width: 70%;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .searchBar {
+    width: 30%;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 1rem;
+    .inputBar {
+      width: 100%;
+    }
   }
 }
 </style>

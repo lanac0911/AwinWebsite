@@ -1,12 +1,21 @@
 <template>
   <div class="wrapper">
     <div class="postBtn">
-      <h2>論文資訊</h2>
-      <el-button size="large" type="primary" @click="clickAdd">＋ 新增</el-button>
+      <h2>成員資訊</h2>
+      <div class="right">
+        <div class="searchBar">
+          <el-input class="inputBar" v-model="search" size="large" placeholder="搜尋">
+            <template #prefix>
+              <el-icon class="el-input__icon"><search /></el-icon>
+            </template>
+          </el-input>
+        </div>
+        <el-button size="large" type="primary" @click="clickAdd">＋ 新增</el-button>
+      </div>
       <el-dialog
         @close="handelClose"
         v-model="dialogFormVisible"
-        :title="formMode == 'eidt' ? '＃編輯' : '#新增'"
+        :title="formMode == 'edit' ? '＃編輯' : '#新增'"
       >
         <el-form :model="form">
           <el-form-item label="計畫名稱">
@@ -112,11 +121,20 @@ export default defineComponent({
       currentPage: 1,
       pageSize: 5,
     });
+    const search = ref("");
 
     const visibleData = computed(() => {
       const startIndex = (pagination.currentPage - 1) * pagination.pageSize;
       const endIndex = startIndex + pagination.pageSize;
-      return Data.value.slice(startIndex, endIndex);
+
+      const filteredData = Data.value.filter((item) => {
+        return item.item && item.item.toLowerCase().includes(search.value.toLowerCase());
+      });
+
+      // Apply pagination to the filtered data
+      const paginatedData = filteredData.slice(startIndex, endIndex);
+
+      return paginatedData;
     });
 
     onMounted(() => {
@@ -271,6 +289,7 @@ export default defineComponent({
       handlePageChange,
       visibleData,
       userData,
+      search,
     };
   },
 });
@@ -305,6 +324,20 @@ export default defineComponent({
     width: 100%;
     display: flex;
     justify-content: center;
+  }
+  .right {
+    width: 70%;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .searchBar {
+    width: 30%;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 1rem;
+    .inputBar {
+      width: 100%;
+    }
   }
 }
 </style>
