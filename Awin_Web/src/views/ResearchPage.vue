@@ -26,14 +26,7 @@
                   :content="person.name"
                   placement="top"
                 >
-                  <el-avatar
-                    class="ava"
-                    :src="
-                      person.image
-                        ? 'data:image/png;base64,' + person.image
-                        : 'https://i0.wp.com/digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png?fit=500%2C500&ssl=1'
-                    "
-                  />
+                  <el-avatar class="ava" :src="'data:image/png;base64,' + person.image" />
                 </el-tooltip>
               </div>
             </div>
@@ -71,7 +64,6 @@ export default defineComponent({
         .then((response) => {
           // 处理响应数据
           Data.value = toRaw(response.data);
-          console.log("Data Plan", Data.value);
         })
         .catch((error) => {
           ElMessage({
@@ -101,11 +93,15 @@ export default defineComponent({
 }
 .context {
   white-space: pre-line;
+  font-size: 1.5rem;
 }
 .el-divider {
   border-top: 1px #000000 var(--el-border-style);
   margin-bottom: 1em;
   margin-top: 0.5em;
+}
+.title {
+  font-size: 2.3rem;
 }
 
 .header {
@@ -135,7 +131,7 @@ export default defineComponent({
   opacity: 0.75;
   margin: 0;
   text-align: center;
-  font-size: 2rem;
+  font-size: 2.3rem;
 }
 
 .el-carousel__item:nth-child(2n) {

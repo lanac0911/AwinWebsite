@@ -106,9 +106,7 @@ export default defineComponent({
 
     const activeNames = ref(["老師的話"]); // 设置默认展开项
 
-    const handleChange = (names) => {
-      console.log("change:", names);
-    };
+    const handleChange = (names) => {};
 
     // Add the expanded property to each content item
     content.forEach((item) => {

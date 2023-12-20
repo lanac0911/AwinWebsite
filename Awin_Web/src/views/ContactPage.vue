@@ -189,6 +189,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
+span {
+  font-size: 1.2rem;
+}
 .title {
   font-weight: bold;
   color: #05a5ba;

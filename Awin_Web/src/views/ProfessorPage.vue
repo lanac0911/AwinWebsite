@@ -15,29 +15,24 @@
           </el-tab-pane>
           <el-tab-pane label="Educ.">
             <el-table
+              style="width: 100%"
               :highlight-current-row="false"
               class="my-table"
               :data="Educ"
-              style="max-width: 100%"
             >
-              <el-table-column prop="school" label="畢業學校" width="190" />
-              <el-table-column prop="nation" label="國別" width="80" />
-              <el-table-column prop="major" label="科系所或主修學門" width="120" />
-              <el-table-column prop="degree" label="學位" width="50" />
-              <el-table-column prop="date" label="起訖年月" width="150" />
+              <el-table-column prop="school" label="畢業學校" />
+              <el-table-column prop="nation" label="國別" />
+              <el-table-column prop="major" label="科系所或主修學門" />
+              <el-table-column prop="degree" label="學位" />
+              <el-table-column prop="date" label="起訖年月" />
             </el-table>
           </el-tab-pane>
           <el-tab-pane label="Exper.">
-            <el-table class="my-table" :data="Expr" style="max-width: 100%">
-              <el-table-column prop="now" label="現職" width="30">
-                <template #default="scope">
-                  {{ scope.row.now ? "✔︎" : "" }}
-                </template>
-              </el-table-column>
-              <el-table-column prop="office" label="服務機關" width="150" />
-              <el-table-column prop="depart" label="服務部門" width="150" />
-              <el-table-column prop="title" label="職稱" width="120" />
-              <el-table-column prop="date" label="起訖年月" width="150" />
+            <el-table class="my-table" :data="Expr" style="width: 100%">
+              <el-table-column prop="office" label="服務機關" />
+              <el-table-column prop="depart" label="服務部門" />
+              <el-table-column prop="title" label="職稱" />
+              <el-table-column prop="date" label="起訖年月" />
             </el-table>
           </el-tab-pane>
           <el-tab-pane label="Contact">
@@ -224,6 +219,7 @@ export default defineComponent({
 span,
 p {
   color: #000000;
+  font-size: 1.4rem;
 }
 :deep(.el-tabs__item.is-active) {
   color: #fff !important;
@@ -235,17 +231,26 @@ p {
   padding: 0rem 1rem !important;
   color: #434343;
 }
+:deep(.el-tabs) {
+  height: 100%;
+}
 :deep(.el-table, .el-table__expanded-cell) {
   background-color: transparent;
   color: #000000;
+}
+:deep(.el-tabs__content) {
+  overflow: auto;
+  height: 100%;
 }
 :deep(.el-table th) {
   background-color: rgba(0, 0, 0, 0.5);
   color: #fdfdfd;
   font-weight: bold;
+  font-size: 1.2rem;
 }
 :deep(.el-table tr) {
   background-color: transparent;
+  font-size: 1.2rem;
 }
 ::v-deep .el-table--enable-row-hover .el-table__body tr:hover > td {
   background-color: #05a5ba;
@@ -261,7 +266,7 @@ p {
 }
 
 .leftArea {
-  width: 35%;
+  width: 25%;
   height: 100%;
   background-image: url("@/assets/professor.png");
   background-size: 130%;
@@ -271,7 +276,7 @@ p {
 }
 
 .rightArea {
-  width: 65%;
+  width: 75%;
   height: 100%;
   padding: 2rem;
 }
@@ -296,7 +301,7 @@ p {
 
 .tabPage {
   width: 100%;
-  height: 90%;
+  height: 80%;
   margin-top: 2rem;
   /*display: flex;
     flex-wrap: wrap;

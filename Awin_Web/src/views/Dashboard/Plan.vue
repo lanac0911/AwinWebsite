@@ -48,6 +48,7 @@
               filterable
               placeholder="Select"
               @change="handleInputConfirm"
+              @keydown.enter.native.prevent
             >
               <el-option
                 v-for="person in allPerson"
@@ -81,7 +82,7 @@
         style="width: 100%; height=250px;"
       >
         <el-table-column prop="name" label="計畫名稱" />
-        <el-table-column prop="planStatus" label="狀態">
+        <el-table-column prop="planStatus" sortable label="狀態">
           <template #default="scope">
             <el-tag
               effect="dark"
@@ -119,18 +120,27 @@
                 </el-icon>
                 編輯
               </el-button>
-              <el-button
-                plain
-                :disabled="userData.identify !== 'TEACHER' ? true : false"
-                size="small"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)"
+              <el-popconfirm
+                confirm-button-text="Yes"
+                cancel-button-text="No"
+                :icon="InfoFilled"
+                title="確認刪除?"
+                @confirm="handleDelete(scope.$index, scope.row)"
               >
-                <el-icon :size="size" :color="color">
-                  <Delete />
-                </el-icon>
-                刪除
-              </el-button>
+                <template #reference>
+                  <el-button
+                    plain
+                    :disabled="userData.identify !== 'TEACHER' ? true : false"
+                    size="small"
+                    type="danger"
+                  >
+                    <el-icon :size="size" :color="color">
+                      <Delete />
+                    </el-icon>
+                    刪除
+                  </el-button>
+                </template>
+              </el-popconfirm>
             </div>
           </template>
         </el-table-column>
@@ -208,15 +218,13 @@ export default defineComponent({
 
       // Filter the data based on the search term
       const filteredData = Data.value.filter((item) => {
-        return (
-          item.name.toLowerCase().includes(search.value.toLowerCase()) ||
-          item.planStatus.toLowerCase().includes(search.value.toLowerCase()) ||
-          // Add more fields to search as needed
-          item.information.toLowerCase().includes(search.value.toLowerCase()) ||
-          item.persons.some((person) =>
-            person.name.toLowerCase().includes(search.value.toLowerCase())
-          )
-        );
+        return item.name.toLowerCase().includes(search.value.toLowerCase());
+        // item.planStatus.toLowerCase().includes(search.value.toLowerCase()) ||
+        // // Add more fields to search as needed
+        // item.information.toLowerCase().includes(search.value.toLowerCase()) ||
+        // item.persons.some((person) =>
+        //   person.name.toLowerCase().includes(search.value.toLowerCase())
+        // );
       });
 
       // Apply pagination to the filtered data
@@ -224,6 +232,7 @@ export default defineComponent({
 
       return paginatedData;
     });
+
     const inputValue = ref("");
     const inputVisible = ref(false);
     const planPeople = ref([]);
@@ -233,16 +242,12 @@ export default defineComponent({
     // add paln person
     const handleTagClose = (tag) => {
       dynamicPerson.value.splice(dynamicPerson.value.indexOf(tag), 1);
-      console.log("handleClose tag:", tag);
     };
     const showInput = () => {
       inputVisible.value = true;
     };
     const handleInputConfirm = (value, option) => {
-      console.log("###1 value", value);
-      console.log("###2 dynamicPerson", dynamicPerson.value);
       dynamicPerson.value.push(value);
-      console.log("選中後的", dynamicPerson.value);
       inputVisible.value = false;
       inputValue.value = "";
     };
@@ -275,8 +280,6 @@ export default defineComponent({
     });
 
     const handelClose = () => {
-      console.log("###3 handelClose", dynamicPerson.value);
-
       dialogFormVisible.value = false;
       Object.keys(form.value).forEach((key) => {
         if (key != "persons") form.value[key] = "";
@@ -294,12 +297,11 @@ export default defineComponent({
           // 处理响应数据
           Data.value = toRaw(response.data);
           pagination.total = Data.value.length;
-          console.log("Data Plan", Data.value);
         })
         .catch((error) => {
           ElMessage({
-            message: error,
-            type: "warning",
+            message: "發生錯誤" + error.response.data,
+            type: "error",
           });
         })
         .finally(() => {
@@ -310,7 +312,6 @@ export default defineComponent({
         .get("/person/all")
         .then((response) => {
           allPerson.value = toRaw(response.data);
-          console.log("Data Person", allPerson.value);
         })
         .catch(() => {
           console.warn("Get All person wrong");
@@ -323,7 +324,6 @@ export default defineComponent({
     };
 
     const clickEdit = (index, row) => {
-      console.log("電擊edit");
       formMode.value = "edit";
       // 帶入表單
       form.value.name = row.name;
@@ -334,7 +334,6 @@ export default defineComponent({
       dialogFormVisible.value = true;
       selectId.value = row.id;
       dynamicPerson.value = row.persons;
-      console.log("電擊edit agetr:", dynamicPerson.value);
     };
 
     const handleConfirm = () => {
@@ -347,16 +346,16 @@ export default defineComponent({
               type: "success",
             });
             fetchData();
+            dialogFormVisible.value = false; // 隐藏对话框等
           })
           .catch((error) => {
             ElMessage({
-              message: error,
+              message: "發生錯誤" + error.response.data,
               type: "warning",
             });
           })
           .finally(() => {
             // 无论成功还是失败，都可以在这里执行一些逻辑
-            dialogFormVisible.value = false; // 隐藏对话框等
           });
       } else {
         axiosInstance
@@ -367,16 +366,16 @@ export default defineComponent({
               type: "success",
             });
             fetchData();
+            dialogFormVisible.value = false; // 隐藏对话框等
           })
           .catch((error) => {
             ElMessage({
-              message: error,
-              type: "warning",
+              message: "發生錯誤" + error.response.data,
+              type: "error",
             });
           })
           .finally(() => {
             // 无论成功还是失败，都可以在这里执行一些逻辑
-            dialogFormVisible.value = false; // 隐藏对话框等
           });
       }
     };
@@ -391,8 +390,8 @@ export default defineComponent({
         })
         .catch((error) => {
           ElMessage({
-            message: error,
-            type: "warning",
+            message: "發生錯誤" + error.response.data,
+            type: "error",
           });
         });
     };
@@ -479,5 +478,13 @@ export default defineComponent({
       width: 100%;
     }
   }
+}
+:deep(.el-table tr) {
+  font-size: 1.1rem;
+}
+
+:deep(.el-table th) {
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 </style>

@@ -23,7 +23,7 @@
             <el-input v-model="form.name" />
           </el-form-item>
           <el-form-item label="學號">
-            <el-input v-model="form.personId" />
+            <el-input v-model="form.personId" :disabled="true" />
           </el-form-item>
           <el-form-item label="身份">
             <el-select v-model="form.identify" placeholder="選擇身份" allow-create>
@@ -105,6 +105,7 @@
             <a v-if="scope.row.instagram" target="_blank" :href="scope.row.instagram">
               論文
             </a>
+            <span v-else> N/A </span>
           </template>
         </el-table-column>
 
@@ -148,18 +149,27 @@
                 </el-icon>
                 編輯
               </el-button>
-              <el-button
-                plain
-                :disabled="userData.identify !== 'TEACHER' ? true : false"
-                size="small"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)"
+              <el-popconfirm
+                confirm-button-text="Yes"
+                cancel-button-text="No"
+                :icon="InfoFilled"
+                title="確認刪除?"
+                @confirm="handleDelete(scope.$index, scope.row)"
               >
-                <el-icon :size="size" :color="color">
-                  <Delete />
-                </el-icon>
-                刪除
-              </el-button>
+                <template #reference>
+                  <el-button
+                    plain
+                    :disabled="userData.identify !== 'TEACHER' ? true : false"
+                    size="small"
+                    type="danger"
+                  >
+                    <el-icon :size="size" :color="color">
+                      <Delete />
+                    </el-icon>
+                    刪除
+                  </el-button>
+                </template>
+              </el-popconfirm>
             </div>
           </template>
         </el-table-column>
@@ -172,6 +182,10 @@
         :total="pagination.total"
         @current-change="handlePageChange"
       />
+    </div>
+    <div>
+      <input type="file" ref="csvFileInput" accept=".csv" @change="handleFileUpload" />
+      <button @click="handleFileProcessing">Upload and Process</button>
     </div>
 
     <pswForm :isOpen="openPsw" :selectId="selectId" @update:isOpen="openPsw = false" />
@@ -192,6 +206,7 @@ import {
   ElUpload,
   ElImage,
 } from "element-plus";
+import Papa from "papaparse";
 
 // 在需要发送请求的组件中
 import axiosInstance from "@/axios";
@@ -231,6 +246,64 @@ export default defineComponent({
     const fileList1 = ref([]);
     const editPersonID = ref(null);
     const search = ref("");
+
+    const csvFileInput = ref(null);
+    const csvData = ref(null);
+
+    const handleFileUpload = () => {
+      const file = csvFileInput.value.files[0];
+      if (file) {
+        Papa.parse(file, {
+          header: true,
+          complete: (result) => {
+            // 在这里修改列的字段名称
+            const modifiedData = result.data.map((row) => {
+              // 修改属性名称
+              row.item = row["Item"];
+              // 删除旧的属性名称
+              delete row["Item"];
+              return row;
+            });
+
+            csvData.value = modifiedData;
+            // csvData.value = result.data;
+          },
+          error: (error) => {
+            console.error("CSV Parsing Error:", error);
+          },
+        });
+      } else {
+        console.error("No file selected");
+      }
+    };
+
+    const handleFileProcessing = async () => {
+      try {
+        const requests = csvData.value.map(async (item) => {
+          // 创建 form 对象或其他数据对象
+          const formData = {
+            item: item.item,
+          };
+          console.log("Parsed CSV Data:", formData);
+
+          // 发送 POST 请求，并将 Promise 返回
+          return axiosInstance.post("/scholar", formData);
+        });
+
+        // 使用 Promise.all 等待所有请求完成
+        const responses = await Promise.all(requests);
+
+        // 处理所有请求的响应
+        responses.forEach((response, index) => {
+          // 处理成功的响应
+          console.log(`POST Success ${index + 1}:`, response.data);
+          // 可以在这里执行其他逻辑
+        });
+      } catch (error) {
+        // 处理错误
+        console.error("POST Error:", error);
+      }
+    };
 
     const visibleData = computed(() => {
       const startIndex = (pagination.currentPage - 1) * pagination.pageSize;
@@ -291,6 +364,7 @@ export default defineComponent({
       }
       fileList1.value = fileList;
     };
+    const nowPersonPlan = ref([]);
     const form = ref({
       personId: "",
       name: "",
@@ -324,6 +398,7 @@ export default defineComponent({
       editPersonID.value = null;
       selectId.value = null;
       selectPId.value = null;
+      nowPersonPlan.value = [];
     };
 
     const handlePageChange = (page) => {
@@ -332,6 +407,7 @@ export default defineComponent({
     };
 
     const fetchData = () => {
+      console.log("有來fetch");
       const params = {
         page: pagination.currentPage,
         size: pagination.pageSize,
@@ -347,8 +423,8 @@ export default defineComponent({
         })
         .catch((error) => {
           ElMessage({
-            duration: 3000,
-            message: "更新資料時發生錯誤" + error,
+            duration: 6000,
+            message: "更新資料時發生錯誤" + error.response.data,
             type: "error",
           });
           console.error("Error:", error);
@@ -362,7 +438,13 @@ export default defineComponent({
       dialogFormVisible.value = true;
       formMode.value = "add";
     };
+
     const clickEdit = (index, row) => {
+      console.log(`clickEdit:`, row);
+      console.log(`clickEdit:`, row.plans);
+      nowPersonPlan.value = row.plans;
+      console.log(`clickEdit owPersonPlan.value:`, nowPersonPlan.value);
+
       formMode.value = "edit";
       // 帶入表單
       editPersonID.value = row.id;
@@ -372,6 +454,7 @@ export default defineComponent({
       form.value.mail = row.mail;
       form.value.identify = row.identify;
       form.value.instagram = row.instagram;
+
       nowImg.value = row.image;
       dialogFormVisible.value = true;
       selectId.value = row.id;
@@ -394,18 +477,26 @@ export default defineComponent({
         .then((response) => {
           // 处理上传成功的逻辑
           console.log("圖片 success:", response.data);
-          fetchData();
         })
         .catch((error) => {
           ElMessage({
-            duration: 3000,
-            message: "圖片上傳失敗：" + error,
+            duration: 6000,
+            message: "圖片上傳失敗：" + error.response.data,
             type: "error",
           });
+        })
+        .finally(() => {
+          fetchData();
         });
     };
+    // 檢查密碼是否符合條件的函式
+    const isPasswordValid = (password) => {
+      // 密碼至少包含1個英文和1個數字，且長度至少為8
+      const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+      return passwordPattern.test(password);
+    };
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
       // 发送 POST 请求
       loading.value = true;
       const resD = ref();
@@ -413,8 +504,18 @@ export default defineComponent({
       console.log(
         `事前檢查：ID${editPersonID.value}, mode: ${formMode.value}, file:${fileList1.value[0]}`
       );
+      if (form.value.mail == "") {
+        ElMessage({
+          duration: 5000,
+          message: "請填寫必填項目",
+          type: "warning",
+        });
+      }
 
       if (formMode.value == "edit") {
+        form.value.plans = nowPersonPlan.value;
+        console.log("now pe", nowPersonPlan.value);
+        console.log("edit put fu-6", form.value);
         axiosInstance
           .put(`/person/${selectId.value}`, form.value)
           .then((response) => {
@@ -423,7 +524,7 @@ export default defineComponent({
               putImg(fileList1.value[0], response.data);
             }
             ElMessage({
-              duration: 3000,
+              duration: 6000,
               message: "修改成功",
               type: "success",
             });
@@ -431,8 +532,8 @@ export default defineComponent({
           })
           .catch((error) => {
             ElMessage({
-              duration: 3000,
-              message: error,
+              duration: 6000,
+              message: "發生錯誤：" + error.response.data,
               type: "error",
             });
           })
@@ -443,6 +544,15 @@ export default defineComponent({
             fetchData();
           });
       } else {
+        // 檢查密碼是否符合條件
+        if (!isPasswordValid(form.value.password)) {
+          ElMessage({
+            duration: 5000,
+            message: "密碼至少包含1個英文和1個數字，且長度至少為8",
+            type: "warning",
+          });
+          return;
+        }
         axiosInstance
           .post("/person", form.value)
           .then((response) => {
@@ -452,21 +562,24 @@ export default defineComponent({
             resD.value = response.data;
             editPersonID.value = resD.value.id;
             console.log("新稱的結果", resD.value);
+            // fetchDat/a();
           })
           .catch((error) => {
             ElMessage({
-              duration: 3000,
-              message: "新增時發生錯誤" + error,
+              duration: 6000,
+              message: "新增時發生錯誤" + error.response.data,
               type: "error",
             });
           })
-          .finally(() => {
+          .finally(async () => {
+            if (!fileList1.value[0]) await fetchData();
+            console.log("ileList1.value[0]", fileList1.value[0]);
+            console.log(" resD.value", resD.value);
             // 无论成功还是失败，都可以在这里执行一些逻辑
             dialogFormVisible.value = false; // 隐藏对话框等
             loading.value = false;
 
             putImg(fileList1.value[0], resD.value);
-            fetchData();
           });
       }
     };
@@ -485,8 +598,8 @@ export default defineComponent({
         })
         .catch((error) => {
           ElMessage({
-            duration: 3000,
-            message: "刪除時發生錯誤" + error,
+            duration: 6000,
+            message: "刪除時發生錯誤" + error.response.data,
             type: "error",
           });
         })
@@ -528,6 +641,10 @@ export default defineComponent({
       form,
       labels,
       handleConfirm,
+
+      csvFileInput,
+      handleFileUpload,
+      handleFileProcessing,
       loading,
       handleDelete,
       clickEdit,
@@ -638,5 +755,13 @@ export default defineComponent({
       width: 100%;
     }
   }
+}
+:deep(.el-table tr) {
+  font-size: 1.1rem;
+}
+
+:deep(.el-table th) {
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 </style>

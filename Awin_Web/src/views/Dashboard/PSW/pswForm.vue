@@ -63,14 +63,13 @@ export default defineComponent({
       // 檢查密碼是否符合條件
       if (!isPasswordValid(form.value.password)) {
         ElMessage({
-          duration: 3000,
+          duration: 6000,
           message: "密碼至少包含1個英文和1個數字，且長度至少為8",
           type: "warning",
         });
         return;
       }
 
-      console.log("ready ");
       const old = form.value.oldPass;
       const body = {
         password: form.value.password,
@@ -78,9 +77,8 @@ export default defineComponent({
       axiosInstance
         .put(`/person/change_pd/${props.selectId}/${old}`, body)
         .then((response) => {
-          console.log("修改成功");
           ElMessage({
-            duration: 3000,
+            duration: 6000,
             message: "修改成功",
             type: "success",
           });
@@ -88,8 +86,8 @@ export default defineComponent({
         })
         .catch((error) => {
           ElMessage({
-            duration: 3000,
-            message: "修改發生錯誤" + error,
+            duration: 6000,
+            message: "修改發生錯誤" + error.response.data,
             type: "error",
           });
           console.error("Error:", error);
@@ -97,8 +95,6 @@ export default defineComponent({
     };
 
     const handelClose = () => {
-      console.log("handelClose emit");
-
       form.value.oldPass = "";
       form.value.password = "";
       emit("update:isOpen", false);
@@ -108,7 +104,6 @@ export default defineComponent({
       () => props.isOpen,
       (newVal) => {
         internalIsOpen.value = newVal;
-        console.log("loginPersonStatus hanged:", loginPersonStatus.value);
       }
     );
 

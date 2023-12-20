@@ -13,32 +13,27 @@ export default createStore({
       state.isAuthenticated = isAuthenticated
     },
     setUserData(state, userData) {
-      console.log("$$$$$$$$$$$$setUserData", userData)
       state.userData = userData
     },
     clearUserData(state) {
-      console.log('clearUserData')
       state.userData = null
     }
   },
 
   actions: {
     async login({ commit }, personInfo) {
-      console.log('login222', personInfo)
       commit('setUserData', personInfo)
       commit('setAuthStatus', true)
       router.push('/dashboard')
     },
 
     async logout({ commit }) {
-      console.log('logout')
       commit('clearUserData')
       commit('setAuthStatus', false)
       router.push('/login')
     },
 
     fetchUser({ commit }) {
-      console.log('fetchUser')
       const store = useStore()
 
       if (store.state.userData != null) {

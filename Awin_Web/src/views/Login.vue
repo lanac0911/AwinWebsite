@@ -72,7 +72,6 @@ export default {
           .then((response) => {
             if (response.data === true) {
               loginPersonStatus.value = loginPerson;
-              console.log("Login Success");
               axios
                 .get(`http://localhost:8080/api/person/personId/${loginPerson.personId}`)
                 .then((response) => {
@@ -86,7 +85,6 @@ export default {
                     // 存储认证状态
                     localStorage.setItem("isAuthenticated", "true");
                   }
-                  console.log("Get Person: ", response.data);
                 })
                 .catch(() => {
                   alert("取得 Person 資料失敗");

@@ -218,15 +218,15 @@ export default defineComponent({
           Data.value = toRaw(response.data);
           selectId.value = Data.value.id;
           ElMessage({
-            duration: 3000,
+            duration: 6000,
             message: "更新成功",
             type: "success",
           });
         })
         .catch((error) => {
           ElMessage({
-            duration: 3000,
-            message: "更新資料時發生錯誤" + error,
+            duration: 6000,
+            message: "更新資料時發生錯誤" + error.response.data,
             type: "error",
           });
           console.error("Error:", error);
@@ -249,7 +249,6 @@ export default defineComponent({
       const formData = new FormData();
       // 将上传的文件添加到 FormData 中
       formData.append("file", file.raw);
-      console.log("putImg:", formData);
 
       axiosInstance
         .post(`/person/uploadImage/${selectId.value}`, formData, {
@@ -259,18 +258,17 @@ export default defineComponent({
         })
         .then((response) => {
           // 处理上传成功的逻辑
-          console.log("圖片 success:", response.data);
           fetchData();
           ElMessage({
-            duration: 3000,
+            duration: 6000,
             message: "更新成功",
             type: "success",
           });
         })
         .catch((error) => {
           ElMessage({
-            duration: 3000,
-            message: "圖片上傳失敗：" + error,
+            duration: 6000,
+            message: "圖片上傳失敗：" + error.response.data,
             type: "error",
           });
         });
@@ -280,13 +278,9 @@ export default defineComponent({
       // 发送 POST 请求
       loading.value = true;
 
-      console.log(`事前檢查： file:${fileList1.value[0]}`);
-
       axiosInstance
         .put(`/person/${selectId.value}`, form.value)
         .then((response) => {
-          console.log("POST Success:", response.data);
-
           if (imageUrl.value) {
             putImg(fileList1.value[0]);
           }
@@ -295,8 +289,8 @@ export default defineComponent({
         })
         .catch((error) => {
           ElMessage({
-            duration: 3000,
-            message: error,
+            duration: 6000,
+            message: "發生錯誤" + error.response.data,
             type: "error",
           });
         })
@@ -310,20 +304,17 @@ export default defineComponent({
 
     const handleDelete = (index, row) => {
       loading.value = true;
-      console.log("row=", row.id);
       axiosInstance
         .delete(`/person/${row.id}`)
         .then((response) => {
           // 处理响应数据
           Data.value = toRaw(response.data);
-          console.log(response.data);
-          console.log("vs", Data.value);
           fetchData();
         })
         .catch((error) => {
           ElMessage({
-            duration: 3000,
-            message: "刪除時發生錯誤" + error,
+            duration: 6000,
+            message: "刪除時發生錯誤" + error.response.data,
             type: "error",
           });
         })
@@ -333,7 +324,6 @@ export default defineComponent({
     };
 
     const beforeAvatarUpload = (rawFile) => {
-      console.log("beforeAvatarUpload.type", rawFile.type);
       if (rawFile.type !== "image/jpeg" && rawFile.type !== "image/png") {
         ElMessage.error("Avatar picture must be JPG format!");
         return false;

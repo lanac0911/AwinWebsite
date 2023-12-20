@@ -1,6 +1,9 @@
 <template>
   <main class="bg-gray-800 min-h-screen flex items-center justify-center w-full z-10">
-    <form class="w-full max-w-sm p-8 bg-gray-100 shadow-md rounded-lg" @submit.prevent="register">
+    <form
+      class="w-full max-w-sm p-8 bg-gray-100 shadow-md rounded-lg"
+      @submit.prevent="register"
+    >
       <h2 class="text-2xl uppercase mb-8 font-bold text-purple-600">Register</h2>
 
       <!-- 學號 -->
@@ -72,7 +75,9 @@
 
       <p class="text-center mt-4">
         Already have an account?
-        <router-link to="/login" class="text-purple-600 underlineb font-bold">Login</router-link>
+        <router-link to="/login" class="text-purple-600 underlineb font-bold"
+          >Login</router-link
+        >
       </p>
     </form>
   </main>
@@ -87,21 +92,21 @@
 </style>
 
 <script>
-import { ref } from 'vue'
-import axios from 'axios'
-import { useStore } from 'vuex'
+import { ref } from "vue";
+import axios from "axios";
+import { useStore } from "vuex";
 export default {
   setup() {
-    const store = useStore()
+    const store = useStore();
     const register_form = ref({
-      personId: '',
-      name: '',
-      password: '',
-      mail: '',
-      identify: 'VISITOR', // Default value, you might want to adjust it based on your requirements
-      github: '',
-      Instagram: ''
-    })
+      personId: "",
+      name: "",
+      password: "",
+      mail: "",
+      identify: "VISITOR", // Default value, you might want to adjust it based on your requirements
+      github: "",
+      Instagram: "",
+    });
 
     const register = async () => {
       try {
@@ -111,15 +116,15 @@ export default {
           !register_form.value.password ||
           !register_form.value.mail
         ) {
-          alert('請填寫所有必填字段')
-          return
+          alert("請填寫所有必填字段");
+          return;
         }
 
         // Password validation
-        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
         if (!passwordRegex.test(register_form.value.password)) {
-          alert('密碼至少8位，且包含至少一個英文字符')
-          return
+          alert("密碼至少8位，且包含至少一個英文字符");
+          return;
         }
 
         const newPerson = {
@@ -129,44 +134,45 @@ export default {
           mail: register_form.value.mail,
           identify: register_form.value.identify,
           github: register_form.value.github,
-          instagram: register_form.value.Instagram
-        }
+          instagram: register_form.value.Instagram,
+        };
 
-        console.log(newPerson)
         axios
-          .get(`http://localhost:8080/api/person/personId/${register_form.value.personId}`)
+          .get(
+            `http://localhost:8080/api/person/personId/${register_form.value.personId}`
+          )
           .then((response) => {
-            let isRegistered = response.data.personId === register_form.value.personId
+            let isRegistered = response.data.personId === register_form.value.personId;
             if (isRegistered) {
-              alert('已註冊過!')
+              alert("已註冊過!");
             } else {
-              registerPerson(newPerson)
+              registerPerson(newPerson);
             }
           })
           .catch(() => {
-            registerPerson(newPerson)
-          })
+            registerPerson(newPerson);
+          });
       } catch (error) {
-        alert('發生錯誤:', error)
+        alert("發生錯誤:", error);
       }
-    }
+    };
 
     return {
       register_form,
-      register
-    }
+      register,
+    };
 
     function registerPerson(newPerson) {
       axios
-        .post('http://localhost:8080/api/person', newPerson)
+        .post("http://localhost:8080/api/person", newPerson)
         .then((response) => {
-          alert('註冊成功，等待教授審核')
-          console.log('註冊成功:', response.data)
+          alert("註冊成功，等待教授審核");
+          console.log("註冊成功:", response.data);
         })
         .catch((error) => {
-          console.log('註冊期間發生錯誤:', error)
-        })
+          console.log("註冊期間發生錯誤:", error);
+        });
     }
-  }
-}
+  },
+};
 </script>

@@ -1,49 +1,51 @@
 <template>
   <div class="container">
     <div class="cardArea">
-      <div class="card" v-for="(info, index) in Data" :key="index">
-        <div class="imgArea">
-          <div class="question"><span>?</span></div>
-          <el-image
-            v-if="info.image"
-            class="realImg"
-            :src="'data:image/png;base64,' + info.image"
-            fit="cover"
-          />
-          <el-image
-            v-else
-            class="realImg"
-            :src="'https://banffventureforum.com/wp-content/uploads/2019/08/No-Image.png'"
-            fit="cover"
-          />
-        </div>
-        <div class="infoArea">
-          <div class="icons">
-            <div class="icon">
-              <el-tooltip
-                class="box-item"
-                effect="dark"
-                :content="info.mail"
-                placement="top"
-              >
-                <img src="@/assets/envelope.png" />
-              </el-tooltip>
-            </div>
-            <div class="icon">
-              <el-tooltip
-                v-if="info.instagram"
-                class="box-item"
-                effect="dark"
-                :content="info.instagram"
-                placement="top"
-              >
-                <img src="@/assets/browser.png" />
-              </el-tooltip>
-            </div>
+      <div class="card2" v-for="(info, index) in Data" :key="index">
+        <div class="card">
+          <div class="imgArea">
+            <div class="question"><span>?</span></div>
+            <el-image
+              v-if="info.image"
+              class="realImg"
+              :src="'data:image/png;base64,' + info.image"
+              fit="contain"
+            />
+            <el-image
+              v-else
+              class="realImg"
+              :src="'https://banffventureforum.com/wp-content/uploads/2019/08/No-Image.png'"
+              fit="contain"
+            />
           </div>
-          <div class="text">
-            <p>{{ info.name }}</p>
-            <p>{{ formatterPersonId(info.personId) }}</p>
+          <div class="infoArea">
+            <div class="icons">
+              <div class="icon">
+                <el-tooltip
+                  class="box-item"
+                  effect="dark"
+                  :content="info.mail"
+                  placement="top"
+                >
+                  <img src="@/assets/envelope.png" />
+                </el-tooltip>
+              </div>
+              <div class="icon">
+                <el-tooltip
+                  v-if="info.instagram"
+                  class="box-item"
+                  effect="dark"
+                  :content="info.instagram"
+                  placement="top"
+                >
+                  <img src="@/assets/browser.png" />
+                </el-tooltip>
+              </div>
+            </div>
+            <div class="text">
+              <p>{{ info.name }}</p>
+              <p>{{ formatterPersonId(info.personId) }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -65,13 +67,10 @@ export default defineComponent({
       axiosInstance
         .get("/person/all")
         .then((response) => {
-          // 处理响应数据
-          Data.value = toRaw(response.data);
-          console.log(response.data);
-          console.log("這粒", Data.value);
+          // 过滤出 Identity 为 'STUDENT' 的数据
+          Data.value = toRaw(response.data).filter((info) => info.identify === "STUDENT");
         })
         .catch((error) => {
-          // 处理错误
           console.error("Error:", error);
         });
     };
@@ -81,9 +80,6 @@ export default defineComponent({
       const Sli_degree = personId.substring(1, 4);
       var master = "";
       var degree = "";
-      console.log("formatterPersonId:", personId);
-      console.log("Sli_degree:", Sli_degree);
-      console.log("Sli_master:", typeof Sli_master);
 
       if (Sli_master === "7") {
         master = "碩士班";
@@ -96,8 +92,6 @@ export default defineComponent({
       } else {
         degree = "二年級";
       }
-      console.log("----degree:", degree);
-      console.log("----:master", master);
 
       return `${master}${degree} `;
     };
@@ -163,6 +157,7 @@ p {
     p {
       font-weight: 600;
       line-height: 1.2;
+      font-size: 1.4rem;
     }
   }
 
@@ -188,7 +183,7 @@ p {
   }
 }
 
-.card:hover {
+.card2:hover {
   transform: scale(1.2); /* 鼠标悬停时放大到 1.1 倍 */
   z-index: 4;
   background-color: rgb(255, 255, 255);
@@ -198,28 +193,28 @@ p {
   border-radius: 1em;
 }
 
-.card:hover .icons {
+.card2:hover .icons {
   display: flex !important;
 }
-.card .icons {
+.card2 .icons {
   display: none !important;
 }
 
-.card:hover .question {
+.card2:hover .question {
   display: none !important;
 }
 
-.card:hover .realImg {
+.card2:hover .realImg {
   display: flex !important;
   border-top-left-radius: 1em;
   border-top-right-radius: 1em;
 }
 
-.card .realImg {
+.card2 .realImg {
   display: none !important;
 }
 
-.card .question {
+.card2 .question {
   display: flex !important;
 }
 .question {
@@ -255,9 +250,8 @@ p {
 }
 
 .card {
-  z-index: 3;
-  width: calc(100% / 5); /* 考慮 gutter 的寬度，這裡是四等分 */
-  height: calc((100% / 4) * 1.5);
+  width: 100%; /* 考慮 gutter 的寬度，這裡是四等分 */
+  height: 100%;
 
   margin: 0; /* 清除 margin */
   background-color: transparent;
@@ -265,11 +259,17 @@ p {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border: 1px solid #fff;
-  transition: transform 0.3s ease; /* 添加过渡效果 */
   /*width: 20%;
   height: 7rem;
   background-color: red;
   border: 1px solid #000;*/
+}
+
+.card2 {
+  z-index: 3;
+  width: calc(100% / 5); /* 考慮 gutter 的寬度，這裡是四等分 */
+  height: calc((100% / 3.3) * 1.5);
+  transition: transform 0.3s ease; /* 添加过渡效果 */
+  border: 1px solid #fff;
 }
 </style>

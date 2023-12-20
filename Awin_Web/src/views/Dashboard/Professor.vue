@@ -54,18 +54,27 @@
                 </el-icon>
                 編輯
               </el-button>
-              <el-button
-                plain
-                :disabled="userData.identify !== 'TEACHER' ? true : false"
-                size="small"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)"
+              <el-popconfirm
+                confirm-button-text="Yes"
+                cancel-button-text="No"
+                :icon="InfoFilled"
+                title="確認刪除?"
+                @confirm="handleDelete(scope.$index, scope.row)"
               >
-                <el-icon :size="size" :color="color">
-                  <Delete />
-                </el-icon>
-                刪除
-              </el-button>
+                <template #reference>
+                  <el-button
+                    plain
+                    :disabled="userData.identify !== 'TEACHER' ? true : false"
+                    size="small"
+                    type="danger"
+                  >
+                    <el-icon :size="size" :color="color">
+                      <Delete />
+                    </el-icon>
+                    刪除
+                  </el-button>
+                </template>
+              </el-popconfirm>
             </div>
           </template>
         </el-table-column>
@@ -132,7 +141,7 @@ export default defineComponent({
       });
 
       // Apply pagination to the filtered data
-      const paginatedData = filteredData.slice(startIndex, endIndex);
+      const paginatedData = filteredData.slice(startIndex, endIndex).reverse();
 
       return paginatedData;
     });
@@ -160,7 +169,6 @@ export default defineComponent({
     });
 
     const handelClose = () => {
-      console.log("close");
       dialogFormVisible.value = false;
       Object.keys(form.value).forEach((key) => {
         form.value[key] = "";
@@ -175,8 +183,6 @@ export default defineComponent({
           // 处理响应数据
           Data.value = toRaw(response.data);
           pagination.total = Data.value.length;
-          console.log(response.data);
-          console.log("vs", Data.value);
         })
         .catch((error) => {
           ElMessage({
@@ -200,11 +206,9 @@ export default defineComponent({
       form.value.item = row.item;
       dialogFormVisible.value = true;
       selectId.value = row.id;
-      console.log("row", row);
     };
 
     const handleConfirm = () => {
-      console.log("POST/PUT mode: ", formMode.value, ",data:", form.value);
       // 发送 POST 请求
 
       if (formMode.value == "edit") {
@@ -212,7 +216,6 @@ export default defineComponent({
           .put(`/scholar/${selectId.value}`, form.value)
           .then((response) => {
             // 处理成功的响应
-            console.log("PUT Success:", response.data);
             // 更新表格数据
             fetchData();
           })
@@ -231,7 +234,6 @@ export default defineComponent({
           .post("/scholar", form.value)
           .then((response) => {
             // 处理成功的响应
-            console.log("POST Success:", response.data);
             // 更新表格数据
             fetchData();
           })
@@ -249,14 +251,11 @@ export default defineComponent({
     };
 
     const handleDelete = (index, row) => {
-      console.log("row=", row.id);
       axiosInstance
         .delete(`/scholar/${row.id}`)
         .then((response) => {
           // 处理响应数据
           Data.value = toRaw(response.data);
-          console.log(response.data);
-          console.log("vs", Data.value);
           fetchData();
         })
         .catch((error) => {
@@ -269,7 +268,6 @@ export default defineComponent({
 
     onMounted(() => {
       // 在组件挂载后执行的逻辑
-      console.log("test");
       fetchData();
     });
 
@@ -339,5 +337,14 @@ export default defineComponent({
       width: 100%;
     }
   }
+}
+
+:deep(.el-table tr) {
+  font-size: 1.1rem;
+}
+
+:deep(.el-table th) {
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 </style>

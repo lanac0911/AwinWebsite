@@ -188,7 +188,6 @@ export default defineComponent({
     // add paln person
     const handleClose = (tag) => {
       // this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
-      console.log("handleClose tag:", tag);
     };
     const showInput = () => {
       inputVisible.value = true;
